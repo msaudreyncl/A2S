@@ -1,0 +1,559 @@
+/* =========================================================
+    Global Theme Variables (Light Blue-ish)
+========================================================= */
+:root {
+    --primary-bg: #E6F0FA;       /* Very light blue background */
+    --secondary-bg: #D0E4FB;     /* Light blue for cards/sections */
+    --accent-color: #4FA3F7;     /* Vibrant blue highlights */
+    --text-color: #1A1A1A;       /* Dark text for readability */
+    --muted-text: #555555;       /* Muted gray text */
+    --card-bg: #FFFFFF;           /* White card backgrounds */
+    --border-color: rgba(79, 163, 247, 0.3); /* Soft blue borders */
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Softer shadow */
+    --hover-glow: 0 0 15px rgba(79, 163, 247, 0.3); /* Softer glow effect */
+    --font-family: 'Montserrat', sans-serif;
+}
+
+/* =========================================================
+    Base Styles
+========================================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--primary-bg);
+    font-family: var(--font-family);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+}
+
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.3s, text-shadow 0.3s;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* =========================================================
+    Header & Navigation
+========================================================= */
+header {
+    background: var(--secondary-bg);
+    padding: 15px 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(79, 163, 247, 0.5);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-link {
+    color: var(--text-color);
+}
+
+header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+}
+
+header h1 i {
+    margin-left: 8px;
+    color: var(--accent-color);
+}
+
+.logo-accent {
+    color: var(--accent-color);
+    font-size: 2rem;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+nav ul li a {
+    color: var(--text-color);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 5px 0;
+    border-bottom: 2px solid transparent;
+}
+
+nav ul li a:hover {
+    color: var(--accent-color);
+    border-bottom: 2px solid var(--accent-color);
+    text-shadow: 0 0 5px var(--accent-color);
+}
+
+.menu-toggle {
+    display: none;
+}
+
+/* =========================================================
+    Sections & Cards
+========================================================= */
+section {
+    padding: 40px 0;
+    margin: 40px auto;
+}
+
+.info-section {
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.section-heading {
+    font-size: 2.2rem;
+    color: var(--accent-color);
+    margin-bottom: 30px;
+    text-align: center;
+    font-weight: 700;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 40px auto;
+    width: 90%;
+    max-width: 1200px;
+}
+
+/* Hero Section */
+.hero-section {
+    text-align: center;
+    background: var(--primary-bg);
+    padding: 80px 0;
+    margin: 0;
+}
+
+.hero-title {
+    font-size: 3.2rem;
+    color: var(--text-color);
+    margin-bottom: 15px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.text-instant {
+    color: var(--accent-color);
+    text-shadow: 0 0 10px rgba(79, 163, 247, 0.3);
+}
+
+.hero-section p {
+    max-width: 800px;
+    margin: 0 auto 40px;
+    font-size: 1.2rem;
+    color: var(--muted-text);
+}
+
+/* How It Works Section */
+.step-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.step-card {
+    background: var(--secondary-bg);
+    padding: 25px;
+    border-radius: 10px;
+    border-left: 5px solid var(--accent-color);
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease;
+}
+
+.step-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--hover-glow);
+}
+
+.step-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 10px;
+    display: block;
+}
+
+.step-card h3 {
+    color: var(--text-color);
+    margin-bottom: 10px;
+    font-size: 1.3rem;
+}
+
+.step-card p {
+    color: var(--muted-text);
+    font-size: 0.95rem;
+}
+
+/* =========================================================
+    Buttons
+========================================================= */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.primary-btn {
+    background: var(--accent-color);
+    color: #FFFFFF;
+}
+
+.primary-btn:hover {
+    background: #7cc0ff;
+    transform: translateY(-2px);
+    box-shadow: var(--hover-glow);
+}
+
+.success-btn {
+    background: #4FA3F7;
+    color: #FFFFFF;
+    border: 1px solid var(--accent-color);
+}
+
+.success-btn:hover {
+    background: #1F77E1;
+    color: #FFFFFF;
+    box-shadow: var(--hover-glow);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* =========================================================
+    Upload Area
+========================================================= */
+.upload-section {
+    padding: 40px;
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+}
+
+.upload-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    padding: 20px 0;
+}
+
+.drag-drop-area {
+    width: 350px;
+    height: 250px;
+    border: 3px dashed var(--border-color);
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: rgba(79, 163, 247, 0.1);
+}
+
+.drag-drop-area:hover {
+    border-color: var(--accent-color);
+    background: rgba(79, 163, 247, 0.2);
+}
+
+.upload-icon {
+    font-size: 3rem;
+    color: var(--accent-color);
+    text-shadow: 0 0 5px var(--accent-color);
+}
+
+.microcopy {
+    color: var(--muted-text);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.preview-processing-area {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.audio-preview-container {
+    width: 280px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--secondary-bg);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.audio-file-icon {
+    font-size: 2rem;
+    color: var(--accent-color);
+    margin-bottom: 5px;
+}
+
+#previewPlaceholder {
+    color: var(--muted-text);
+    font-style: italic;
+    margin-top: 0;
+}
+
+#fileNameDisplay {
+    color: var(--text-color);
+    font-weight: 600;
+    word-break: break-all;
+    max-width: 100%;
+    text-align: center;
+    padding: 0 10px;
+}
+
+/* Loading Spinner */
+.spinner-container p {
+    color: var(--accent-color);
+    font-weight: 600;
+    text-shadow: 0 0 5px rgba(79, 163, 247, 0.2);
+}
+
+/* Results Box */
+.results-area {
+    margin-top: 40px;
+    background: var(--secondary-bg);
+    padding: 30px;
+    box-shadow: var(--hover-glow);
+    border-radius: 16px;
+}
+
+.results-area h3,
+.result-description h4 {
+    color: var(--text-color);
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.result-item {
+    color: var(--text-color);
+    font-size: 1.05rem;
+}
+
+.result-item strong {
+    color: var(--accent-color);
+}
+
+/* Notation Preview */
+.notation-preview-placeholder {
+    min-height: 200px;
+    background: var(--card-bg);
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.notation-icon-large {
+    font-size: 3rem;
+    color: var(--accent-color);
+    margin-bottom: 10px;
+}
+
+/* =========================================================
+    Demo Section
+========================================================= */
+.demo-section {
+    text-align: center;
+    padding: 40px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center all content horizontally */
+    gap: 40px;
+}
+
+.demo-subtitle {
+    color: var(--muted-text);
+    font-size: 1.1rem;
+    max-width: 700px;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.demo-grid {
+    display: flex;
+    justify-content: center; /* Center the two cards horizontally */
+    align-items: flex-start; /* Align cards to top */
+    gap: 30px; 
+    flex-wrap: wrap; /* Wrap on smaller screens */
+}
+
+.demo-card {
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 12px;
+    width: 450px;          /* Fixed width to make cards equal */
+    max-width: 90%;         /* Responsive fallback for smaller screens */
+    min-height: 380px;      /* Ensures both cards are same height */
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;    /* Center content inside each card */
+    text-align: center;
+}
+
+.demo-card h3 {
+    color: var(--text-color);
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+}
+
+.demo-card p {
+    color: var(--text-color);
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+}
+
+.demo-icon {
+    font-size: 3rem;
+    color: var(--accent-color);
+    margin-bottom: 15px;
+}
+
+.notation-placeholder {
+    min-height: 100px;
+    background-color: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    color: var(--muted-text);
+    font-size: 0.8rem;
+    font-style: italic;
+    padding: 10px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+.before-card {
+    border-left: 5px solid #FFDC64; 
+}
+
+.after-card {
+    border-left: 5px solid var(--accent-color);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 30px;
+    color: var(--text-color);
+    background: var(--secondary-bg);
+    border-top: 1px solid rgba(79, 163, 247, 0.5);
+}
+
+/* =========================================================
+    Responsive Adjustments
+========================================================= */
+@media (max-width: 900px) {
+    .upload-area {
+        flex-direction: column;
+        gap: 25px;
+    }
+    .drag-drop-area {
+        width: 100%;
+        height: 200px;
+    }
+    .preview-processing-area {
+        width: 100%;
+    }
+    .audio-preview-container {
+        width: 100%;
+        max-width: 350px;
+    }
+    .demo-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+    .demo-card {
+        width: 100%;
+    }
+    .result-data-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 60px 0 40px;
+    }
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    .section-heading {
+        font-size: 1.8rem;
+    }
+    .download-options {
+        flex-direction: column;
+    }
+    .header-content nav {
+        display: none;
+    }
+    .step-grid {
+        grid-template-columns: 1fr;
+    }
+}
