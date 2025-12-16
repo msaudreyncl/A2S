@@ -176,7 +176,8 @@
         
         audioInput.addEventListener('change', e => fileSelected(e.target.files[0]));
         uploadBtn.addEventListener('click', (e) => {
-            e.preventDefault(); // Prevent button from being a submit if it was inside a form
+            e.preventDefault();  // Prevent default form submission
+            e.stopPropagation();  // Prevent the event from bubbling to the label
             audioInput.click();
         });
 
