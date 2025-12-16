@@ -164,16 +164,16 @@
         const loadingSpinner = document.getElementById('loadingSpinner');
         
         let currentAudioFile = null;
-
-        // Make the drag-drop area interactive
-        const dragDropArea = document.querySelector('.drag-drop-area');
-        dragDropArea.addEventListener('click', (e) => {
-            // Only trigger file input if the button or area is clicked, not the input itself
-            if (e.target.id !== 'audioInput') {
-                audioInput.click();
-            }
-        });
+        // REMOVE THIS ENTIRE BLOCK - The <label> already handles clicks on the drag-drop area
+        // const dragDropArea = document.querySelector('.drag-drop-area');
+        // dragDropArea.addEventListener('click', (e) => {
+        //     // Only trigger file input if the button or area is clicked, not the input itself
+        //     if (e.target.id !== 'audioInput') {
+        //         audioInput.click();
+        //     }
+        // });
         
+        // Keep the button listener (it already has stopPropagation, so it's fine)
         audioInput.addEventListener('change', e => fileSelected(e.target.files[0]));
         uploadBtn.addEventListener('click', (e) => {
             e.preventDefault();  // Prevent default form submission
