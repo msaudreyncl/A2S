@@ -167,17 +167,16 @@
         const resultsBox = document.getElementById('resultsSection');
         const loadingSpinner = document.getElementById('loadingSpinner');
         
-        let currentAudioFile = null;
-        // REMOVE THIS ENTIRE BLOCK - The <label> already handles clicks on the drag-drop area
-        // const dragDropArea = document.querySelector('.drag-drop-area');
-        // dragDropArea.addEventListener('click', (e) => {
-        //     // Only trigger file input if the button or area is clicked, not the input itself
-        //     if (e.target.id !== 'audioInput') {
-        //         audioInput.click();
-        //     }
-        // });
+        // NEW: Variables for audio playback
+        const playAudioBtn = document.getElementById('playAudioBtn');
+        const audioPlayer = document.getElementById('audioPlayer');
+        let isPlaying = false;  // Track play state
         
-        // Keep the button listener (it already has stopPropagation, so it's fine)
+        let currentAudioFile = null;
+
+        // Make the drag-drop area interactive (label handles clicks, no redundant JS needed)
+        // Removed redundant listener as per previous fix
+        
         audioInput.addEventListener('change', e => fileSelected(e.target.files[0]));
         uploadBtn.addEventListener('click', (e) => {
             e.preventDefault();  // Prevent default form submission
@@ -193,6 +192,60 @@
             fileNameDisplay.style.display = 'block';
             analyzeBtn.disabled = false;
             resultsBox.style.display = 'none';
+
+            // NEW: Enable audio playback
+            try {
+                const audioURL = URL.createObjectURL(file);  // Create a blob URL for the file
+                audioPlayer.src = audioURL;
+                audioPlayer.load();  // Load the audio
+                playAudioBtn.disabled = false;
+                playAudioBtn.classList.remove('disabled');
+                playAudioBtn.innerHTML = '<i class="fas fa-play"></i> Play Audio';  // Reset button text
+                isPlaying = false;
+            } catch (error) {
+                console.error('Error setting up audio:', error);
+                alert('Unable to play this audio file. It may not be supported.');
+            }
+        }
+
+        // NEW: Add click listener for play/pause toggle
+        playAudioBtn.addEventListener('click', () => {
+            if (!audioPlayer.src) return;  // No file loaded
+
+            if (isPlaying) {
+                audioPlayer.pause();
+                playAudioBtn.innerHTML = '<i class="fas fa-play"></i> Play Audio';
+            } else {
+                audioPlayer.play().catch(error => {
+                    console.error('Error playing audio:', error);
+                    alert('Error playing audio. Check the file format.');
+                });
+                playAudioBtn.innerHTML = '<i class="fas fa-pause"></i> Pause Audio';
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // Function to set up download buttons (defined outside event listeners)
+        function setupDownloadButtons() {
+            const pdfBtn = document.querySelector('.download-options .btn:nth-child(1)');  // PDF button
+            const midiBtn = document.querySelector('.download-options .btn:nth-child(2)');  // MIDI button
+            const editorBtn = document.querySelector('.download-options .btn:nth-child(3)');  // Editor button
+
+            if (pdfBtn) {
+                pdfBtn.addEventListener('click', () => {
+                    window.open('http://localhost:3000/api/download/pdf', '_blank');  // Opens download in new tab/window
+                });
+            }
+            if (midiBtn) {
+                midiBtn.addEventListener('click', () => {
+                    window.open('http://localhost:3000/api/download/midi', '_blank');
+                });
+            }
+            if (editorBtn) {
+                editorBtn.addEventListener('click', () => {
+                    window.open('http://localhost:3000/api/download/editor', '_blank');
+                });
+            }
         }
 
         analyzeBtn.addEventListener('click', async () => {
@@ -201,12 +254,12 @@
             analyzeBtn.disabled = true;
             loadingSpinner.style.display = 'flex';
             
-            // Simulate AI processing delay
+            // Simulate AI processing delay (replace with real fetch to backend)
             await new Promise(r => setTimeout(r, 2500)); 
 
             loadingSpinner.style.display = 'none';
             
-            // Populate mock results for demo
+            // Populate mock results for demo (replace with real backend response)
             document.getElementById('pieceTitle').innerText = currentAudioFile.name.replace(/\.[^/.]+$/, "");
             document.getElementById('instrumentDetected').innerText = "Vocal/Melody + Piano Chord Progression";
             document.getElementById('keyTempo').innerText = "D Major / 120 BPM"; // Mock data
@@ -218,40 +271,9 @@
             // Scroll to results
             resultsBox.scrollIntoView({ behavior: 'smooth' });
 
-            // ... (rest of your script remains unchanged)
-
-            // Add event listeners for download buttons (after results are shown)
-            function setupDownloadButtons() {
-            const pdfBtn = document.querySelector('.download-options .btn:nth-child(1)');  // PDF button
-            const midiBtn = document.querySelector('.download-options .btn:nth-child(2)');  // MIDI button
-            const editorBtn = document.querySelector('.download-options .btn:nth-child(3)');  // Editor button
-
-            if (pdfBtn) {
-                pdfBtn.addEventListener('click', () => {
-                window.open('http://localhost:3000/api/download/pdf', '_blank');  // Opens download in new tab/window
-                });
-            }
-            if (midiBtn) {
-                midiBtn.addEventListener('click', () => {
-                window.open('http://localhost:3000/api/download/midi', '_blank');
-                });
-            }
-            if (editorBtn) {
-                editorBtn.addEventListener('click', () => {
-                window.open('http://localhost:3000/api/download/editor', '_blank');
-                });
-            }
-            }
-
-            // Call this after showing results
-            analyzeBtn.addEventListener('click', async () => {
-            // ... (your existing code)
-
-            // After resultsBox.style.display = 'block';
-            setupDownloadButtons();  // NEW: Enable downloads
-            });
+            // Enable downloads after results are shown
+            setupDownloadButtons();
         });
-        
     </script>
 
 </body>
