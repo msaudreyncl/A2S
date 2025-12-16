@@ -120,26 +120,30 @@
         
         <br><br>
         <section id="demo" class="demo-section container">
-            <h2 class="section-heading">🎼 Before & After Demo 🎼</h2>
-            <p class="demo-subtitle">See the magic: raw audio is transformed into clean, professional notation.</p>
-            <div class="demo-grid">
-                <div class="demo-card before-card">
-                    <h3>Before: Raw Audio</h3>
-                    <i class="fas fa-microphone demo-icon"></i>
-                    <p>A 15-second acoustic guitar riff (WAV format)</p>
-                    <button class="btn primary-btn disabled" disabled>Play Audio <i class="fas fa-play"></i></button>
-                </div>
-                <div class="demo-card after-card">
-                    <h3>After: Generated Sheet</h3>
-                    <i class="fas fa-book-open demo-icon"></i>
-                    <div class="notation-placeholder">
-
-[Image of a generated music sheet (Treble and Bass Clefs)]
-</div>
-                    <p>Standard notation with rhythm and dynamics</p>
-                    <button class="btn success-btn disabled" disabled>View Sheet <i class="fas fa-eye"></i></button>
-                </div>
+        <h2 class="section-heading">🎼 Before & After Demo 🎼</h2>
+        <p class="demo-subtitle">See the magic: raw audio is transformed into clean, professional notation.</p>
+        <div class="demo-grid">
+            <div class="demo-card before-card">
+            <h3>Before: Raw Audio</h3>
+            <i class="fas fa-microphone demo-icon"></i>
+            <p>A 15-second acoustic guitar riff (WAV format)</p>
+            <!-- NEW: Hidden audio element for playback -->
+            <audio id="audioPlayer" style="display: none;"></audio>
+            <button id="playAudioBtn" class="btn primary-btn disabled" disabled>
+                <i class="fas fa-play"></i> Play Audio
+            </button>
             </div>
+            <!-- After card remains unchanged -->
+            <div class="demo-card after-card">
+            <h3>After: Generated Sheet</h3>
+            <i class="fas fa-book-open demo-icon"></i>
+            <div class="notation-placeholder">
+                [Image of a generated music sheet (Treble and Bass Clefs)]
+            </div>
+            <p>Standard notation with rhythm and dynamics</p>
+            <button class="btn success-btn disabled" disabled>View Sheet <i class="fas fa-eye"></i></button>
+            </div>
+        </div>
         </section>
 
     </main>
