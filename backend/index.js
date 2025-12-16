@@ -4,20 +4,20 @@ import dotenv from "dotenv";
 import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
-import PDFDocument from "pdfkit";  // NEW: For PDF generation
-import MidiWriter from "midi-writer-js";  // NEW: For MIDI generation
+import PDFDocument from "pdfkit";  // For PDF generation
+import MidiWriter from "midi-writer-js";  // For MIDI generation
 
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = 3000;  // Ensure this matches your frontend fetch URLs
 
 // Middleware
-app.use(cors());
+app.use(cors());  // Allows requests from your frontend
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Configure multer (unchanged)
+// Configure multer for file uploads
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const upload = multer({
@@ -29,20 +29,20 @@ const upload = multer({
       cb(new Error("Only audio files are allowed!"), false);
     }
   },
-  limits: { fileSize: 10 * 1024 * 1024 },
+  limits: { fileSize: 10 * 1024 * 1024 },  // 10MB limit
 });
 
-// Default Route (unchanged)
+// Default Route
 app.get("/", (req, res) => {
   res.send("Backend server is running...");
 });
 
-// Example API route (unchanged)
+// Example API route
 app.get("/api/hello", (req, res) => {
   res.json({ message: "Hello from backend!" });
 });
 
-// /api/generate route (unchanged, but referenced for context)
+// /api/generate route for uploading and processing audio
 app.post("/api/generate", upload.single("audio"), async (req, res) => {
   try {
     if (!req.file) {
@@ -51,8 +51,8 @@ app.post("/api/generate", upload.single("audio"), async (req, res) => {
 
     console.log(`Received audio file: ${req.file.originalname} (${req.file.size} bytes)`);
 
-    // Simulate AI processing
-    await new Promise(resolve => setTimeout(resolve, 2500));
+    // Simulate AI processing (replace with real AI later)
+    await new Promise(resolve => setTimeout(r, 2500));
 
     // Mock AI results
     const mockResults = {
@@ -77,7 +77,7 @@ app.get("/api/download/pdf", (req, res) => {
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="sheet-music.pdf"`);
 
-    // Generate mock PDF content (simple text-based sheet music)
+    // Generate mock PDF content
     doc.fontSize(20).text("A2S Generated Sheet Music", { align: "center" });
     doc.moveDown();
     doc.fontSize(14).text("Title: Mock Piece");
@@ -86,7 +86,7 @@ app.get("/api/download/pdf", (req, res) => {
     doc.text("Accuracy: 95%");
     doc.moveDown();
     doc.text("Mock Notes: C D E F G A B C (Treble Clef)");
-    doc.text("(In a real app, this would be actual notation rendered from AI data.)");
+    doc.text("(In a real app, this would be actual notation.)");
 
     doc.pipe(res);
     doc.end();
@@ -99,7 +99,6 @@ app.get("/api/download/pdf", (req, res) => {
 // NEW: Route to download MIDI
 app.get("/api/download/midi", (req, res) => {
   try {
-    // Generate a simple MIDI file with a few notes
     const track = new MidiWriter.Track();
     track.addEvent(new MidiWriter.NoteEvent({ pitch: ['C4', 'E4', 'G4'], duration: '4' }));  // C major chord
     track.addEvent(new MidiWriter.NoteEvent({ pitch: ['D4', 'F#4', 'A4'], duration: '4' }));  // D major chord
@@ -117,17 +116,16 @@ app.get("/api/download/midi", (req, res) => {
   }
 });
 
-// NEW: Route to download editor data (JSON export as placeholder for web editor)
+// NEW: Route to download editor data (JSON)
 app.get("/api/download/editor", (req, res) => {
   try {
-    // Mock editor data (JSON with results; in real app, this could be MusicXML or editor-compatible format)
     const editorData = {
       title: "Mock Piece",
       instrument: "Piano",
       keyTempo: "C Major / 120 BPM",
       accuracy: "95%",
-      notes: ["C4", "D4", "E4", "F4", "G4"],  // Simple note array
-      message: "This is mock data for the web editor. In a real app, integrate with a tool like MuseScore or export as MusicXML."
+      notes: ["C4", "D4", "E4", "F4", "G4"],
+      message: "This is mock data for the web editor. In a real app, integrate with a tool like MuseScore."
     };
 
     res.setHeader("Content-Type", "application/json");
@@ -139,7 +137,7 @@ app.get("/api/download/editor", (req, res) => {
   }
 });
 
-// Start server (unchanged)
+// Start server
 app.listen(PORT, () => {
   console.log(`Backend running at http://localhost:${PORT}`);
 });
