@@ -213,6 +213,39 @@
 
             // Scroll to results
             resultsBox.scrollIntoView({ behavior: 'smooth' });
+
+            // ... (rest of your script remains unchanged)
+
+            // Add event listeners for download buttons (after results are shown)
+            function setupDownloadButtons() {
+            const pdfBtn = document.querySelector('.download-options .btn:nth-child(1)');  // PDF button
+            const midiBtn = document.querySelector('.download-options .btn:nth-child(2)');  // MIDI button
+            const editorBtn = document.querySelector('.download-options .btn:nth-child(3)');  // Editor button
+
+            if (pdfBtn) {
+                pdfBtn.addEventListener('click', () => {
+                window.open('http://localhost:3000/api/download/pdf', '_blank');  // Opens download in new tab/window
+                });
+            }
+            if (midiBtn) {
+                midiBtn.addEventListener('click', () => {
+                window.open('http://localhost:3000/api/download/midi', '_blank');
+                });
+            }
+            if (editorBtn) {
+                editorBtn.addEventListener('click', () => {
+                window.open('http://localhost:3000/api/download/editor', '_blank');
+                });
+            }
+            }
+
+            // Call this after showing results
+            analyzeBtn.addEventListener('click', async () => {
+            // ... (your existing code)
+
+            // After resultsBox.style.display = 'block';
+            setupDownloadButtons();  // NEW: Enable downloads
+            });
         });
         
     </script>
