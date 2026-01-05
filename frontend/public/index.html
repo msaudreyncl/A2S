@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/opensheetmusicdisplay@1.1.0/build/opensheetmusicdisplay.min.js"></script>
 </head>
 
 <body>
@@ -251,28 +252,29 @@
         analyzeBtn.addEventListener('click', async () => {
             if (!currentAudioFile) return;
 
+            const formData = new FormData();
+            formData.append('audio', currentAudioFile);
+
             analyzeBtn.disabled = true;
             loadingSpinner.style.display = 'flex';
-            
-            // Simulate AI processing delay (replace with real fetch to backend)
-            await new Promise(r => setTimeout(r, 2500)); 
+
+            // 1. Send to Backend
+            const response = await fetch('http://localhost:3000/api/generate', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
 
             loadingSpinner.style.display = 'none';
-            
-            // Populate mock results for demo (replace with real backend response)
-            document.getElementById('pieceTitle').innerText = currentAudioFile.name.replace(/\.[^/.]+$/, "");
-            document.getElementById('instrumentDetected').innerText = "Vocal/Melody + Piano Chord Progression";
-            document.getElementById('keyTempo').innerText = "D Major / 120 BPM"; // Mock data
-            document.getElementById('accuracyEstimate').innerText = "94%"; // Mock data
-            
             resultsBox.style.display = 'block';
-            analyzeBtn.disabled = false;
 
-            // Scroll to results
+            // 2. Render Music Sheet
+            const osmd = new opensheetmusicdisplay.OpenSheetMusicDisplay("notation-container");
+            // Note: You would typically convert the MIDI to MusicXML for best display results
+            // For now, we update the UI text
+            document.getElementById('pieceTitle').innerText = data.title;
+            
             resultsBox.scrollIntoView({ behavior: 'smooth' });
-
-            // Enable downloads after results are shown
-            setupDownloadButtons();
         });
     </script>
 
