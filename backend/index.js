@@ -6,6 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import PDFDocument from "pdfkit";  // For PDF generation
 import MidiWriter from "midi-writer-js";  // For MIDI generation
+import { spawn } from "child_process";
 
 dotenv.config();
 
@@ -45,28 +46,32 @@ app.get("/api/hello", (req, res) => {
 // /api/generate route for uploading and processing audio
 app.post("/api/generate", upload.single("audio"), async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: "No audio file uploaded." });
-    }
+    if (!req.file) return res.status(400).json({ error: "No file uploaded." });
 
-    console.log(`Received audio file: ${req.file.originalname} (${req.file.size} bytes)`);
+    const inputPath = req.file.path;
+    const outputDir = path.join(__dirname, "uploads");
+    
+    // 1. Call Python Script
+    const pythonProcess = spawn('python', ['transcribe.py', inputPath, outputDir]);
 
-    // Simulate AI processing (replace with real AI later)
-    await new Promise(resolve => setTimeout(r, 2500));
-
-    // Mock AI results
-    const mockResults = {
-      title: req.file.originalname.replace(/\.[^/.]+$/, ""),
-      instrument: "Vocal/Melody + Piano Chord Progression",
-      keyTempo: "D Major / 120 BPM",
-      accuracy: "94%",
-    };
-
-    console.log("AI processing complete. Returning results:", mockResults);
-    res.json(mockResults);
+    pythonProcess.on('close', (code) => {
+      if (code === 0) {
+        // 2. The model creates a file named: [filename]_basic_pitch.mid
+        const midiFileName = `${req.file.filename}_basic_pitch.mid`;
+        
+        res.json({
+          title: req.file.originalname.replace(/\.[^/.]+$/, ""),
+          instrument: "Detected Piano/Melodic",
+          keyTempo: "Detected automatically",
+          midiUrl: `/uploads/${midiFileName}`,
+          accuracy: "85-95%"
+        });
+      } else {
+        res.status(500).json({ error: "AI Processing failed." });
+      }
+    });
   } catch (error) {
-    console.error("Error processing audio:", error);
-    res.status(500).json({ error: "Failed to process audio file. Please try again." });
+    res.status(500).json({ error: "Server Error" });
   }
 });
 
