@@ -4,145 +4,103 @@ import dotenv from "dotenv";
 import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
-import PDFDocument from "pdfkit";  // For PDF generation
-import MidiWriter from "midi-writer-js";  // For MIDI generation
+import PDFDocument from "pdfkit";
 import { spawn } from "child_process";
+import fs from "fs";
 
 dotenv.config();
-
 const app = express();
-const PORT = 3000;  // Ensure this matches your frontend fetch URLs
+const PORT = 3000;
 
-// Middleware
-app.use(cors());  // Allows requests from your frontend
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Configure multer for file uploads
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Ensure uploads folder exists
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+
+// Multer config
 const upload = multer({
-  dest: path.join(__dirname, "uploads"),
+  dest: uploadsDir,
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith("audio/")) {
-      cb(null, true);
-    } else {
-      cb(new Error("Only audio files are allowed!"), false);
-    }
+    if (file.mimetype.startsWith("audio/")) cb(null, true);
+    else cb(new Error("Only audio files allowed!"), false);
   },
-  limits: { fileSize: 10 * 1024 * 1024 },  // 10MB limit
+  limits: { fileSize: 10 * 1024 * 1024 },
 });
 
-// Default Route
-app.get("/", (req, res) => {
-  res.send("Backend server is running...");
-});
+// Test route
+app.get("/", (req, res) => res.send("Backend server running"));
 
-// Example API route
-app.get("/api/hello", (req, res) => {
-  res.json({ message: "Hello from backend!" });
-});
-
-// /api/generate route for uploading and processing audio
+// API: Generate MusicXML & MIDI
 app.post("/api/generate", upload.single("audio"), async (req, res) => {
-  try {
-    if (!req.file) return res.status(400).json({ error: "No file uploaded." });
+  if (!req.file) return res.status(400).json({ error: "No file uploaded." });
 
-    const inputPath = req.file.path;
-    const outputDir = path.join(__dirname, "uploads");
-    
-    // 1. Call Python Script
-    const pythonProcess = spawn('python', ['transcribe.py', inputPath]);
+  const inputPath = req.file.path;
+  const fileBaseName = path.parse(req.file.originalname).name;
 
-    pythonProcess.on('close', (code) => {
-      if (code === 0) {
-        // 2. The model creates a file named: [filename]_basic_pitch.mid
-        const midiFileName = `${req.file.filename}_basic_pitch.mid`;
-        
-        res.json({
-          title: req.file.originalname.replace(/\.[^/.]+$/, ""),
-          instrument: "Detected Piano/Melodic",
-          keyTempo: "Detected automatically",
-          midiUrl: `/uploads/${midiFileName}`,
-          accuracy: "85-95%"
-        });
-      } else {
-        res.status(500).json({ error: "AI Processing failed." });
-      }
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Server Error" });
-  }
+  const pythonProcess = spawn("python", ["transcribe.py", inputPath]);
+
+  pythonProcess.on("close", (code) => {
+    if (code === 0) {
+      const midiFileName = `${fileBaseName}_basic_pitch.mid`;
+      const xmlFileName = `${fileBaseName}_basic_pitch.xml`;
+
+      res.json({
+        title: fileBaseName,
+        instrument: "Detected Piano/Melodic",
+        keyTempo: "Detected automatically",
+        accuracy: "85-95%",
+        midiUrl: `/uploads/${midiFileName}`,
+        musicXmlUrl: `/uploads/${xmlFileName}`,
+      });
+    } else {
+      res.status(500).json({ error: "AI Processing failed." });
+    }
+  });
 });
 
-// NEW: Route to download PDF
+// Serve uploads
+app.use("/uploads", express.static(uploadsDir));
+
+// PDF Download (dynamic)
 app.get("/api/download/pdf", (req, res) => {
   try {
+    const { title = "Untitled", instrument = "-", keyTempo = "-", accuracy = "-" } = req.query;
     const doc = new PDFDocument();
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="sheet-music.pdf"`);
+    res.setHeader("Content-Disposition", `attachment; filename="${title}.pdf"`);
 
-    // Generate mock PDF content
     doc.fontSize(20).text("A2S Generated Sheet Music", { align: "center" });
     doc.moveDown();
-    doc.fontSize(14).text("Title: Mock Piece");
-    doc.text("Instrument: Piano");
-    doc.text("Key/Tempo: C Major / 120 BPM");
-    doc.text("Accuracy: 95%");
+    doc.fontSize(14).text(`Title: ${title}`);
+    doc.text(`Instrument: ${instrument}`);
+    doc.text(`Key/Tempo: ${keyTempo}`);
+    doc.text(`Accuracy: ${accuracy}`);
     doc.moveDown();
-    doc.text("Mock Notes: C D E F G A B C (Treble Clef)");
-    doc.text("(In a real app, this would be actual notation.)");
-
+    doc.text("This PDF corresponds to your uploaded audio file.");
     doc.pipe(res);
     doc.end();
   } catch (error) {
-    console.error("Error generating PDF:", error);
+    console.error("PDF Error:", error);
     res.status(500).send("Failed to generate PDF.");
   }
 });
 
-// NEW: Route to download MIDI
+// MIDI Download
 app.get("/api/download/midi", (req, res) => {
-  try {
-    const track = new MidiWriter.Track();
-    track.addEvent(new MidiWriter.NoteEvent({ pitch: ['C4', 'E4', 'G4'], duration: '4' }));  // C major chord
-    track.addEvent(new MidiWriter.NoteEvent({ pitch: ['D4', 'F#4', 'A4'], duration: '4' }));  // D major chord
-    track.addEvent(new MidiWriter.NoteEvent({ pitch: ['E4', 'G#4', 'B4'], duration: '4' }));  // E major chord
-
-    const writer = new MidiWriter.Writer(track);
-    const midiBuffer = Buffer.from(writer.buildFile(), 'binary');
-
-    res.setHeader("Content-Type", "audio/midi");
-    res.setHeader("Content-Disposition", `attachment; filename="sheet-music.mid"`);
-    res.send(midiBuffer);
-  } catch (error) {
-    console.error("Error generating MIDI:", error);
-    res.status(500).send("Failed to generate MIDI.");
-  }
-});
-
-// NEW: Route to download editor data (JSON)
-app.get("/api/download/editor", (req, res) => {
-  try {
-    const editorData = {
-      title: "Mock Piece",
-      instrument: "Piano",
-      keyTempo: "C Major / 120 BPM",
-      accuracy: "95%",
-      notes: ["C4", "D4", "E4", "F4", "G4"],
-      message: "This is mock data for the web editor. In a real app, integrate with a tool like MuseScore."
-    };
-
-    res.setHeader("Content-Type", "application/json");
-    res.setHeader("Content-Disposition", `attachment; filename="editor-data.json"`);
-    res.json(editorData);
-  } catch (error) {
-    console.error("Error generating editor data:", error);
-    res.status(500).send("Failed to generate editor data.");
+  const { file } = req.query;
+  const midiPath = path.join(uploadsDir, file);
+  if (fs.existsSync(midiPath)) {
+    res.download(midiPath);
+  } else {
+    res.status(404).send("MIDI file not found");
   }
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`Backend running at http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`Backend running at http://localhost:${PORT}`));
