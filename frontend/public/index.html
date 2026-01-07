@@ -157,122 +157,72 @@
     </script>
     
     <script type="module">
-        const audioInput = document.getElementById('audioInput');
-        const previewPlaceholder = document.getElementById('previewPlaceholder');
-        const analyzeBtn = document.getElementById('analyzeAudioBtn');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-        const resultsBox = document.getElementById('resultsSection');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        
-        // NEW: Variables for audio playback
-        const playAudioBtn = document.getElementById('playAudioBtn');
-        const audioPlayer = document.getElementById('audioPlayer');
-        let isPlaying = false;  // Track play state
-        
-        let currentAudioFile = null;
+    const audioInput = document.getElementById('audioInput');
+    const analyzeBtn = document.getElementById('analyzeAudioBtn');
+    const resultsBox = document.getElementById('resultsSection');
+    const playAudioBtn = document.getElementById('playAudioBtn');
+    const audioPlayer = document.getElementById('audioPlayer');
+    let isPlaying = false;
+    let currentData = null;
 
-        // Make the drag-drop area interactive (label handles clicks, no redundant JS needed)
-        // Removed redundant listener as per previous fix
-        
-        audioInput.addEventListener('change', e => fileSelected(e.target.files[0]));
-        uploadBtn.addEventListener('click', (e) => {
-            e.preventDefault();  // Prevent default form submission
-            e.stopPropagation();  // Prevent the event from bubbling to the label
-            audioInput.click();
-        });
+    // Audio playback
+    audioInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        audioPlayer.src = URL.createObjectURL(file);
+        audioPlayer.load();
+        playAudioBtn.disabled = false;
+    });
 
-        async function fileSelected(file) {
-            if (!file) return;
-            currentAudioFile = file;
-            fileNameDisplay.innerText = file.name;
-            previewPlaceholder.style.display = 'none';
-            fileNameDisplay.style.display = 'block';
-            analyzeBtn.disabled = false;
-            resultsBox.style.display = 'none';
+    // Play/pause toggle
+    playAudioBtn.addEventListener('click', () => {
+        if (isPlaying) { audioPlayer.pause(); playAudioBtn.innerHTML = '<i class="fas fa-play"></i> Play Audio'; }
+        else { audioPlayer.play(); playAudioBtn.innerHTML = '<i class="fas fa-pause"></i> Pause Audio'; }
+        isPlaying = !isPlaying;
+    });
 
-            // NEW: Enable audio playback
-            try {
-                const audioURL = URL.createObjectURL(file);  // Create a blob URL for the file
-                audioPlayer.src = audioURL;
-                audioPlayer.load();  // Load the audio
-                playAudioBtn.disabled = false;
-                playAudioBtn.classList.remove('disabled');
-                playAudioBtn.innerHTML = '<i class="fas fa-play"></i> Play Audio';  // Reset button text
-                isPlaying = false;
-            } catch (error) {
-                console.error('Error setting up audio:', error);
-                alert('Unable to play this audio file. It may not be supported.');
-            }
-        }
+    // Analyze Button
+    analyzeBtn.addEventListener('click', async () => {
+        if (!audioInput.files[0]) return;
+        const formData = new FormData();
+        formData.append('audio', audioInput.files[0]);
+        analyzeBtn.disabled = true;
 
-        // NEW: Add click listener for play/pause toggle
-        playAudioBtn.addEventListener('click', () => {
-            if (!audioPlayer.src) return;  // No file loaded
+        const response = await fetch('http://localhost:3000/api/generate', { method: 'POST', body: formData });
+        const data = await response.json();
+        currentData = data;
 
-            if (isPlaying) {
-                audioPlayer.pause();
-                playAudioBtn.innerHTML = '<i class="fas fa-play"></i> Play Audio';
-            } else {
-                audioPlayer.play().catch(error => {
-                    console.error('Error playing audio:', error);
-                    alert('Error playing audio. Check the file format.');
-                });
-                playAudioBtn.innerHTML = '<i class="fas fa-pause"></i> Pause Audio';
-            }
-            isPlaying = !isPlaying;
-        });
+        // Populate UI
+        document.getElementById('pieceTitle').innerText = data.title;
+        document.getElementById('instrumentDetected').innerText = data.instrument;
+        document.getElementById('keyTempo').innerText = data.keyTempo;
+        document.getElementById('accuracyEstimate').innerText = data.accuracy;
+        resultsBox.style.display = 'block';
+        resultsBox.scrollIntoView({ behavior: 'smooth' });
 
-        // Function to set up download buttons (defined outside event listeners)
-        function setupDownloadButtons() {
-            const pdfBtn = document.querySelector('.download-options .btn:nth-child(1)');  // PDF button
-            const midiBtn = document.querySelector('.download-options .btn:nth-child(2)');  // MIDI button
-            const editorBtn = document.querySelector('.download-options .btn:nth-child(3)');  // Editor button
+        // Render MusicXML using OSMD
+        const osmd = new opensheetmusicdisplay.OpenSheetMusicDisplay("notation-container");
+        await osmd.load(data.musicXmlUrl);
+        osmd.render();
 
-            if (pdfBtn) {
-                pdfBtn.addEventListener('click', () => {
-                    window.open('http://localhost:3000/api/download/pdf', '_blank');  // Opens download in new tab/window
-                });
-            }
-            if (midiBtn) {
-                midiBtn.addEventListener('click', () => {
-                    window.open('http://localhost:3000/api/download/midi', '_blank');
-                });
-            }
-            if (editorBtn) {
-                editorBtn.addEventListener('click', () => {
-                    window.open('http://localhost:3000/api/download/editor', '_blank');
-                });
-            }
-        }
+        analyzeBtn.disabled = false;
+    });
 
-        analyzeBtn.addEventListener('click', async () => {
-            if (!currentAudioFile) return;
+    // PDF Download button
+    document.querySelector('.download-options .btn:nth-child(1)').addEventListener('click', () => {
+        if (!currentData) return;
+        const { title, instrument, keyTempo, accuracy } = currentData;
+        const url = `http://localhost:3000/api/download/pdf?title=${encodeURIComponent(title)}&instrument=${encodeURIComponent(instrument)}&keyTempo=${encodeURIComponent(keyTempo)}&accuracy=${encodeURIComponent(accuracy)}`;
+        window.open(url, '_blank');
+    });
 
-            const formData = new FormData();
-            formData.append('audio', currentAudioFile);
-
-            analyzeBtn.disabled = true;
-            loadingSpinner.style.display = 'flex';
-
-            // 1. Send to Backend
-            const response = await fetch('http://localhost:3000/api/generate', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await response.json();
-
-            loadingSpinner.style.display = 'none';
-            resultsBox.style.display = 'block';
-
-            // 2. Render Music Sheet
-            const osmd = new opensheetmusicdisplay.OpenSheetMusicDisplay("notation-container");
-            // Note: You would typically convert the MIDI to MusicXML for best display results
-            // For now, we update the UI text
-            document.getElementById('pieceTitle').innerText = data.title;
-            
-            resultsBox.scrollIntoView({ behavior: 'smooth' });
-        });
+    // MIDI Download button
+    document.querySelector('.download-options .btn:nth-child(2)').addEventListener('click', () => {
+        if (!currentData) return;
+        const midiFile = currentData.midiUrl.split('/').pop();
+        const url = `http://localhost:3000/api/download/midi?file=${midiFile}`;
+        window.open(url, '_blank');
+    });
     </script>
 
 </body>
