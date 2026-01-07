@@ -37,8 +37,7 @@ app.post("/api/generate", upload.single("audio"), (req, res) => {
 
     // Call your Python script
     // We use "python" or "python3" depending on your OS
-    exec(`python transcribe.py "${filePath}"`, (error, stdout, stderr) => {
-        if (error) {
+    exec(`set PYTHONIOENCODING=utf-8 && python transcribe.py "${filePath}"`, (error, stdout, stderr) => {        if (error) {
             console.error(`Exec error: ${error}`);
             return res.status(500).json({ error: "AI Transcription failed." });
         }
