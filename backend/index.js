@@ -52,7 +52,7 @@ app.post("/api/generate", upload.single("audio"), async (req, res) => {
     const outputDir = path.join(__dirname, "uploads");
     
     // 1. Call Python Script
-    const pythonProcess = spawn('python', ['transcribe.py', inputPath, outputDir]);
+    const pythonProcess = spawn('python', ['transcribe.py', inputPath]);
 
     pythonProcess.on('close', (code) => {
       if (code === 0) {
