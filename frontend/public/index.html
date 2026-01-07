@@ -68,48 +68,28 @@
         <section id="detect" class="upload-section container">
             <h2 class="section-heading">🎶 Generate Notation from Audio 🎶</h2>
             <div class="upload-area">
-                <label for="audioInput" class="drag-drop-area">
+                <label for="audioInput" class="drag-drop-area" style="cursor: pointer;">
                     <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                    <p class="microcopy">Drop your audio file (MP3, WAV, M4A) or Click to Upload</p>
+                    <p id="previewPlaceholder" class="microcopy">Drop audio file or Click to Upload</p>
                     <input type="file" id="audioInput" accept="audio/*" class="sr-only">
-                    <button id="uploadBtn" type="button" class="btn primary-btn"><i class="fas fa-upload"></i> Choose Audio File</button>
+                    <div class="btn primary-btn"><i class="fas fa-upload"></i> Choose Audio File</div>
                 </label>
 
                 <div class="preview-processing-area">
-                    <div id="audioPreviewContainer" class="audio-preview-container">
-                        <i class="fas fa-file-audio audio-file-icon"></i>
-                        <p id="previewPlaceholder">No audio file selected.</p>
-                        <span id="fileNameDisplay" style="display:none;"></span>
-                    </div>
-
                     <div id="loadingSpinner" class="spinner-container" style="display: none;">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><linearGradient id="a12"><stop offset="0" stop-color="#4FA3F7" stop-opacity="0"></stop><stop offset="1" stop-color="#4FA3F7"></stop></linearGradient><circle fill="none" stroke="url(#a12)" stroke-width="15" stroke-linecap="round" stroke-dasharray="0 44 0 44 0 44 0 44 0 360" cx="100" cy="100" r="70" transform-origin="center"><animateTransform type="rotate" attributeName="transform" calcMode="discrete" dur="2" values="360;324;288;252;216;180;144;108;72;36" repeatCount="indefinite"></animateTransform></circle></svg>
-                        <p>AI is analyzing harmony and rhythm... (Processing Audio to Sheet)</p>
+                        <p>AI is analyzing... please wait.</p>
                     </div>
-                    
-                    <button id="analyzeAudioBtn" class="btn success-btn" disabled><i class="fas fa-file-download"></i> Generate Sheet Music</button>
+                    <button id="analyzeAudioBtn" class="btn success-btn" disabled>
+                        <i class="fas fa-file-download"></i> Generate Sheet Music
+                    </button>
                 </div>
             </div>
 
             <div id="resultsSection" class="results-area" style="display:none;">
-                <h3>Generation Complete!</h3>
-                <div class="result-data-grid">
-                    <div class="result-item"><strong>Piece Title:</strong> <span id="pieceTitle">Beethoven - Moonlight Sonata</span></div>
-                    <div class="result-item"><strong>Instrument Detected:</strong> <span id="instrumentDetected">Piano</span></div>
-                    <div class="result-item"><strong>Key/Tempo:</strong> <span id="keyTempo">C# minor / 60 BPM</span></div>
-                    <div class="result-item"><strong>Accuracy Estimate:</strong> <span id="accuracyEstimate">92%</span></div>
-                </div>
-
-                <div class="result-description">
-                    <h4>Generated Notation Preview:</h4>
-                    <div id="notation-container" class="notation-preview-placeholder">
-                        <i class="fas fa-scroll notation-icon-large"></i>
-                        <p>Your generated sheet music will appear here.</p>
-                    </div>
-                </div>
-                
+                <div id="notation-container"></div>
                 <div class="download-options">
-                    <button class="btn primary-btn"><i class="fas fa-file-pdf"></i> Download PDF</button>
+                    <button id="downloadPdf" class="btn primary-btn"><i class="fas fa-file-pdf"></i> PDF</button>
+                    <button id="downloadMidi" class="btn success-btn"><i class="fas fa-file-audio"></i> MIDI</button>
                 </div>
             </div>
         </section>
@@ -157,72 +137,48 @@
     </script>
     
     <script type="module">
-    const audioInput = document.getElementById('audioInput');
-    const analyzeBtn = document.getElementById('analyzeAudioBtn');
-    const resultsBox = document.getElementById('resultsSection');
-    const playAudioBtn = document.getElementById('playAudioBtn');
-    const audioPlayer = document.getElementById('audioPlayer');
-    let isPlaying = false;
-    let currentData = null;
+        const audioInput = document.getElementById('audioInput');
+        const analyzeBtn = document.getElementById('analyzeAudioBtn');
+        const placeholder = document.getElementById('previewPlaceholder');
+        const resultsBox = document.getElementById('resultsSection');
 
-    // Audio playback
-    audioInput.addEventListener('change', e => {
-        const file = e.target.files[0];
-        if (!file) return;
-        audioPlayer.src = URL.createObjectURL(file);
-        audioPlayer.load();
-        playAudioBtn.disabled = false;
-    });
+        // FIXED: This enables the button when you pick a file
+        audioInput.addEventListener('change', () => {
+            if (audioInput.files.length > 0) {
+                placeholder.innerText = "Selected: " + audioInput.files[0].name;
+                analyzeBtn.disabled = false; // ENABLE THE BUTTON
+            }
+        });
 
-    // Play/pause toggle
-    playAudioBtn.addEventListener('click', () => {
-        if (isPlaying) { audioPlayer.pause(); playAudioBtn.innerHTML = '<i class="fas fa-play"></i> Play Audio'; }
-        else { audioPlayer.play(); playAudioBtn.innerHTML = '<i class="fas fa-pause"></i> Pause Audio'; }
-        isPlaying = !isPlaying;
-    });
+        analyzeBtn.addEventListener('click', async () => {
+            const file = audioInput.files[0];
+            const formData = new FormData();
+            formData.append('audio', file);
 
-    // Analyze Button
-    analyzeBtn.addEventListener('click', async () => {
-        if (!audioInput.files[0]) return;
-        const formData = new FormData();
-        formData.append('audio', audioInput.files[0]);
-        analyzeBtn.disabled = true;
+            analyzeBtn.disabled = true;
+            document.getElementById('loadingSpinner').style.display = 'block';
 
-        const response = await fetch('http://localhost:3000/api/generate', { method: 'POST', body: formData });
-        const data = await response.json();
-        currentData = data;
+            try {
+                const response = await fetch('http://localhost:3000/api/generate', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                // Render Music
+                const osmd = new opensheetmusicdisplay.OpenSheetMusicDisplay("notation-container");
+                await osmd.load(data.musicXmlUrl);
+                osmd.render();
 
-        // Populate UI
-        document.getElementById('pieceTitle').innerText = data.title;
-        document.getElementById('instrumentDetected').innerText = data.instrument;
-        document.getElementById('keyTempo').innerText = data.keyTempo;
-        document.getElementById('accuracyEstimate').innerText = data.accuracy;
-        resultsBox.style.display = 'block';
-        resultsBox.scrollIntoView({ behavior: 'smooth' });
-
-        // Render MusicXML using OSMD
-        const osmd = new opensheetmusicdisplay.OpenSheetMusicDisplay("notation-container");
-        await osmd.load(data.musicXmlUrl);
-        osmd.render();
-
-        analyzeBtn.disabled = false;
-    });
-
-    // PDF Download button
-    document.querySelector('.download-options .btn:nth-child(1)').addEventListener('click', () => {
-        if (!currentData) return;
-        const { title, instrument, keyTempo, accuracy } = currentData;
-        const url = `http://localhost:3000/api/download/pdf?title=${encodeURIComponent(title)}&instrument=${encodeURIComponent(instrument)}&keyTempo=${encodeURIComponent(keyTempo)}&accuracy=${encodeURIComponent(accuracy)}`;
-        window.open(url, '_blank');
-    });
-
-    // MIDI Download button
-    document.querySelector('.download-options .btn:nth-child(2)').addEventListener('click', () => {
-        if (!currentData) return;
-        const midiFile = currentData.midiUrl.split('/').pop();
-        const url = `http://localhost:3000/api/download/midi?file=${midiFile}`;
-        window.open(url, '_blank');
-    });
+                resultsBox.style.display = 'block';
+                resultsBox.scrollIntoView({ behavior: 'smooth' });
+            } catch (err) {
+                alert("Error processing audio.");
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+                analyzeBtn.disabled = false;
+            }
+        });
     </script>
 
 </body>

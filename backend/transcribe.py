@@ -3,13 +3,14 @@ import os
 from basic_pitch.inference import predict_and_save
 from music21 import converter
 
-def run_ai(input_file):
-    output_dir = "backend/uploads"
-    os.makedirs(output_dir, exist_ok=True)
-
-    # 1. Generate MIDI
+def run_ai(input_file_path):
+    # Get the directory where the uploaded file is (uploads/)
+    output_dir = os.path.dirname(input_file_path)
+    
+    # 1. Run Basic Pitch
+    # This generates [filename]_basic_pitch.mid
     predict_and_save(
-        audio_path_list=[input_file],
+        audio_path_list=[input_file_path],
         output_directory=output_dir,
         save_midi=True,
         sonify_midi=False,
@@ -17,14 +18,19 @@ def run_ai(input_file):
         save_notes=False
     )
 
-    # 2. Convert MIDI → MusicXML for OSMD
-    base_name = os.path.splitext(os.path.basename(input_file))[0]
-    midi_file = os.path.join(output_dir, f"{base_name}_basic_pitch.mid")
-    xml_file = os.path.join(output_dir, f"{base_name}_basic_pitch.xml")
+    # 2. Path to the newly created MIDI
+    midi_file = input_file_path + "_basic_pitch.mid"
+    xml_file = input_file_path + "_basic_pitch.xml"
 
+    # 3. Convert to MusicXML
     if os.path.exists(midi_file):
-        midi = converter.parse(midi_file)
-        midi.write('musicxml', fp=xml_file)
+        score = converter.parse(midi_file)
+        score.write('musicxml', fp=xml_file)
+        print(f"Success: {xml_file}")
+    else:
+        print("Error: MIDI not generated")
+        sys.exit(1)
 
 if __name__ == "__main__":
-    run_ai(sys.argv[1])
+    if len(sys.argv) > 1:
+        run_ai(sys.argv[1])
