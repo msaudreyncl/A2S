@@ -557,3 +557,18 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+#notation-container {
+    width: 100%;
+    min-height: 500px; /* Ensures space is reserved for the sheet music */
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-top: 20px;
+}
+
+.results-area {
+    margin-top: 30px;
+    text-align: center;
+}
