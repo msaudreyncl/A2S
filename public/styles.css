@@ -558,17 +558,87 @@ footer {
     }
 }
 
+/* =========================================================
+    Music Notation & Dynamic Results (Integrated)
+========================================================= */
+
+/* The main container where the sheet music appears */
 #notation-container {
     width: 100%;
-    min-height: 500px; /* Ensures space is reserved for the sheet music */
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    margin-top: 20px;
+    min-height: 500px;
+    background: #FFFFFF; /* High contrast white for the sheet music */
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    margin-bottom: 30px;
+    overflow-x: auto; /* Allows scrolling if the sheet is wide */
 }
 
-.results-area {
-    margin-top: 30px;
+/* Container for the PDF and MIDI buttons */
+.download-options {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Custom Spinner Animation to match your accent blue */
+.spinner-container {
     text-align: center;
+    padding: 20px;
+}
+
+.spinner-container::before {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 15px;
+    border: 4px solid var(--secondary-bg);
+    border-top: 4px solid var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Ensure the results area matches your card style */
+.results-area {
+    display: none; /* Hidden by default until JS reveals it */
+    margin-top: 40px;
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 16px;
+    border: 2px solid var(--accent-color); /* Stronger border to highlight success */
+    box-shadow: var(--hover-glow);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Print Styling: Ensures only the sheet music prints when clicking PDF */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #notation-container, #notation-container * {
+        visibility: visible;
+    }
+    #notation-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none;
+        border: none;
+    }
 }
