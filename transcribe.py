@@ -4,11 +4,11 @@ from basic_pitch.inference import predict_and_save
 from music21 import converter
 
 def run_ai(input_file_path):
-    # Get the directory where the uploaded file is (uploads/)
+    # Get directory and filename
     output_dir = os.path.dirname(input_file_path)
     
     # 1. Run Basic Pitch
-    # This generates [filename]_basic_pitch.mid
+    # This creates: [input_file_path]_basic_pitch.mid
     predict_and_save(
         audio_path_list=[input_file_path],
         output_directory=output_dir,
@@ -18,8 +18,8 @@ def run_ai(input_file_path):
         save_notes=False
     )
 
-    # 2. Path to the newly created MIDI
-    midi_file = input_file_path + "_basic_pitch.mid"
+    # Note: basic_pitch appends "_basic_pitch.mid" to the original filename
+    midi_file = input_file_path.replace(os.path.splitext(input_file_path)[1], "") + "_basic_pitch.mid"
     xml_file = input_file_path + "_basic_pitch.xml"
 
     # 3. Convert to MusicXML
@@ -28,7 +28,7 @@ def run_ai(input_file_path):
         score.write('musicxml', fp=xml_file)
         print(f"Success: {xml_file}")
     else:
-        print("Error: MIDI not generated")
+        print(f"Error: MIDI not found at {midi_file}")
         sys.exit(1)
 
 if __name__ == "__main__":
