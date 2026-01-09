@@ -1,5 +1,5 @@
 import os
-os.environ["TF_USE_LEGACY_KERAS"] = "1" # Forces compatibility for basic-pitch
+os.environ["TF_USE_LEGACY_KERAS"] = "1"
 
 from flask import Flask, request, jsonify
 import os
