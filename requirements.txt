@@ -1,4 +1,4 @@
 flask
 basic-pitch==0.4.0
 music21
-tensorflow-cpu==2.15.0
+tensorflow-cpu>=2.11.0,<2.16.0
