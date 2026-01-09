@@ -1,5 +1,0 @@
-flask
-basic-pitch==0.4.0
-music21
-tensorflow-cpu>=2.16.1
-tf-keras
