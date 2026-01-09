@@ -140,3 +140,17 @@ vite.config.ts.timestamp-*
 
 server.cert
 server.key
+
+# Python virtual environments
+venv/
+.venv/
+env/
+python/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Project specific
+uploads/*
+!uploads/.gitkeep
