@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/opensheetmusicdisplay@1.1.0/build/opensheetmusicdisplay.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
 <body>
@@ -32,8 +34,10 @@
     <main>
         <section id="home" class="hero-section">
             <div class="container hero-content">
-                <h2 class="hero-title">Transform Audio Into Music Sheet <strong class="text-instant">Instantly</strong></h2>
-                <p>The accurate AI that turns any recording — guitar solos, piano covers, humming, orchestra — into professional, editable notation.</p>
+                <h2 class="hero-title">Transform Audio Into Music Sheet <strong class="text-instant">Instantly</strong>
+                </h2>
+                <p>The accurate AI that turns any recording — guitar solos, piano covers, humming, orchestra — into
+                    professional, editable notation.</p>
                 <a href="#detect" class="btn primary-btn call-to-action">
                     <i class="fas fa-magic"></i> Start Generating Sheet Music
                 </a>
@@ -51,12 +55,14 @@
                 <div class="step-card">
                     <span class="step-number">2.</span>
                     <h3>AI Analysis & Processing</h3>
-                    <p>Our custom deep-learning model analyzes pitch, rhythm, and dynamics to create a precise music XML structure.</p>
+                    <p>Our custom deep-learning model analyzes pitch, rhythm, and dynamics to create a precise music XML
+                        structure.</p>
                 </div>
                 <div class="step-card">
                     <span class="step-number">3.</span>
                     <h3>View, Edit, & Download</h3>
-                    <p>Get instant sheet music! Export as PDF, MIDI, or refine the notation in our built-in web editor.</p>
+                    <p>Get instant sheet music! Export as PDF, MIDI, or refine the notation in our built-in web editor.
+                    </p>
                 </div>
             </div>
         </section>
@@ -86,42 +92,43 @@
             </div>
 
             <div id="resultsSection" class="results-area" style="display:none;">
-                <div id="notation-container"></div>
+                <div id="notation-container" style="background: white; padding: 20px;"></div>
                 <div class="download-options">
-                    <button id="downloadPdf" class="btn primary-btn"><i class="fas fa-file-pdf"></i> PDF</button>
-                    <button id="downloadMidi" class="btn success-btn"><i class="fas fa-file-audio"></i> MIDI</button>
+                    <button id="downloadPdf" class="btn primary-btn">
+                        <i class="fas fa-file-pdf"></i> Download PDF
+                    </button>
                 </div>
             </div>
         </section>
-        
+
         <hr class="container">
-        
+
         <br><br>
         <section id="demo" class="demo-section container">
-        <h2 class="section-heading">🎼 Before & After Demo 🎼</h2>
-        <p class="demo-subtitle">See the magic: raw audio is transformed into clean, professional notation.</p>
-        <div class="demo-grid">
-            <div class="demo-card before-card">
-            <h3>Before: Raw Audio</h3>
-            <i class="fas fa-microphone demo-icon"></i>
-            <p>A 15-second acoustic guitar riff (WAV format)</p>
-            <!-- NEW: Hidden audio element for playback -->
-            <audio id="audioPlayer" style="display: none;"></audio>
-            <button id="playAudioBtn" class="btn primary-btn disabled" disabled>
-                <i class="fas fa-play"></i> Play Audio
-            </button>
+            <h2 class="section-heading">🎼 Before & After Demo 🎼</h2>
+            <p class="demo-subtitle">See the magic: raw audio is transformed into clean, professional notation.</p>
+            <div class="demo-grid">
+                <div class="demo-card before-card">
+                    <h3>Before: Raw Audio</h3>
+                    <i class="fas fa-microphone demo-icon"></i>
+                    <p>A 15-second acoustic guitar riff (WAV format)</p>
+                    <!-- NEW: Hidden audio element for playback -->
+                    <audio id="audioPlayer" style="display: none;"></audio>
+                    <button id="playAudioBtn" class="btn primary-btn disabled" disabled>
+                        <i class="fas fa-play"></i> Play Audio
+                    </button>
+                </div>
+                <!-- After card remains unchanged -->
+                <div class="demo-card after-card">
+                    <h3>After: Generated Sheet</h3>
+                    <i class="fas fa-book-open demo-icon"></i>
+                    <div class="notation-placeholder">
+                        [Image of a generated music sheet (Treble and Bass Clefs)]
+                    </div>
+                    <p>Standard notation with rhythm and dynamics</p>
+                    <button class="btn success-btn disabled" disabled>View Sheet <i class="fas fa-eye"></i></button>
+                </div>
             </div>
-            <!-- After card remains unchanged -->
-            <div class="demo-card after-card">
-            <h3>After: Generated Sheet</h3>
-            <i class="fas fa-book-open demo-icon"></i>
-            <div class="notation-placeholder">
-                [Image of a generated music sheet (Treble and Bass Clefs)]
-            </div>
-            <p>Standard notation with rhythm and dynamics</p>
-            <button class="btn success-btn disabled" disabled>View Sheet <i class="fas fa-eye"></i></button>
-            </div>
-        </div>
         </section>
 
     </main>
@@ -132,10 +139,6 @@
         </div>
     </footer>
 
-    <script>
-        // Smooth scroll and mobile menu toggle logic would go here
-    </script>
-    
     <script type="module">
         const audioInput = document.getElementById('audioInput');
         const analyzeBtn = document.getElementById('analyzeAudioBtn');
@@ -166,10 +169,10 @@
                     body: formData
                 });
                 const data = await response.json();
-                
+
                 if (data.musicXmlUrl) {
                     resultsBox.style.display = 'block';
-                    
+
                     // Initialize OSMD
                     const osmd = new opensheetmusicdisplay.OpenSheetMusicDisplay("notation-container", {
                         autoResize: true,
@@ -179,16 +182,31 @@
                     await osmd.load(data.musicXmlUrl);
                     osmd.render();
 
-                    // Setup Download Buttons
-                    document.getElementById('downloadPdf').onclick = () => window.print(); // Simple PDF trick
-                    document.getElementById('downloadMidi').onclick = () => {
-                        // Downloads the MIDI generated by Python
-                        const midiUrl = data.musicXmlUrl.replace('.xml', '.mid');
-                        const link = document.createElement('a');
-                        link.href = midiUrl;
-                        link.download = "generated_music.mid";
-                        link.click();
+                    // Setup PDF Download (Direct Download Logic)
+                    document.getElementById('downloadPdf').onclick = async () => {
+                        const { jsPDF } = window.jspdf;
+
+                        // Capture the container as a canvas
+                        // We add a slight delay to ensure rendering is fully complete
+                        const canvas = await html2canvas(notationContainer, {
+                            scale: 2, // Increases resolution for better PDF quality
+                            useCORS: true,
+                            backgroundColor: "#ffffff"
+                        });
+
+                        const imgData = canvas.toDataURL('image/png');
+                        const pdf = new jsPDF('p', 'mm', 'a4');
+
+                        // Calculate dimensions to fit A4 page
+                        const imgProps = pdf.getImageProperties(imgData);
+                        const pdfWidth = pdf.internal.pageSize.getWidth();
+                        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+                        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                        pdf.save("A2S_Generated_Sheet.pdf"); // Direct download
                     };
+
+                    // MIDI Logic Removed as requested
 
                     resultsBox.scrollIntoView({ behavior: 'smooth' });
                 }
@@ -203,4 +221,5 @@
     </script>
 
 </body>
+
 </html>
