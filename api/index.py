@@ -1,3 +1,6 @@
+import os
+os.environ["TF_USE_LEGACY_KERAS"] = "1" # Forces compatibility for basic-pitch
+
 from flask import Flask, request, jsonify
 import os
 from basic_pitch.inference import predict_and_save, ICASSP_2022_MODEL_PATH
