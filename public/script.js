@@ -17,11 +17,10 @@ analyzeBtn.addEventListener('click', async () => {
 
     const data = await response.json();
 
-    // Populate results
+    // Populate results (excluding MIDI)
     document.getElementById('pieceTitle').innerText = data.title;
     document.getElementById('instrumentDetected').innerText = data.instrument;
     document.getElementById('keyTempo').innerText = data.keyTempo;
-    document.getElementById('accuracyEstimate').innerText = data.accuracy;
 
     resultsBox.style.display = 'block';
     analyzeBtn.disabled = false;

@@ -34,14 +34,12 @@ app.post("/api/generate", upload.single("audio"), (req, res) => {
     const filePath = path.resolve(req.file.path);
     const pythonCmd = process.platform === "win32" ? "python" : "python3";
 
-    // Set PYTHONIOENCODING to utf-8 via environment variables for the child process
     const options = {
         maxBuffer: 1024 * 1024 * 10,
         env: { ...process.env, PYTHONIOENCODING: "utf-8" }
     };
 
     exec(`${pythonCmd} transcribe.py "${filePath}"`, options, (error, stdout, stderr) => {
-        // Log clean messages to avoid charmap errors in Node console too
         if (error && !stdout) {
             console.error("AI Error:", error);
             return res.status(500).json({ error: "Transcription engine failed." });

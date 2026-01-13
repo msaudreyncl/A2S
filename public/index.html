@@ -7,7 +7,9 @@
     <title>A2S | AI Music Notation Generator</title>
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Poppins:wght@300;500;700&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/opensheetmusicdisplay@1.1.0/build/opensheetmusicdisplay.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -25,52 +27,56 @@
                     <li><a href="#home" data-target="home">Home</a></li>
                     <li><a href="#how-it-works" data-target="how-it-works">How It Works</a></li>
                     <li><a href="#detect" data-target="detect">Generate</a></li>
-                    <li><a href="#demo" data-target="demo">Demo</a></li>
                 </ul>
             </nav>
         </div>
     </header>
-
     <main>
         <section id="home" class="hero-section">
             <div class="container hero-content">
                 <h2 class="hero-title">Transform Audio Into Music Sheet <strong class="text-instant">Instantly</strong>
                 </h2>
-                <p>The accurate AI that turns any recording — guitar solos, piano covers, humming, orchestra — into
-                    professional, editable notation.</p>
+                <p>The AI that turns any instrumental piano recording <em>— more instruments coming soon —</em> into
+                    professional, downloadable notation.</p>
                 <a href="#detect" class="btn primary-btn call-to-action">
-                    <i class="fas fa-magic"></i> Start Generating Sheet Music
+                    <i class="fas fa-magic"></i> Start Generating Music Sheet
                 </a>
             </div>
+            <!-- Added creative floating music notes for eye-catching effect -->
+            <div class="music-notes">
+                <i class="fas fa-music note note-1"></i>
+                <i class="fas fa-music note note-2"></i>
+                <i class="fas fa-music note note-3"></i>
+                <i class="fas fa-music note note-4"></i>
+            </div>
         </section>
-
         <section id="how-it-works" class="info-section container">
             <h2 class="section-heading">💡 How A2S Works in 3 Steps 💡</h2>
             <div class="step-grid">
                 <div class="step-card">
-                    <span class="step-number">1.</span>
+                    <i class="fas fa-upload step-icon"></i>
                     <h3>Upload or Record Audio</h3>
-                    <p>Select your music file (MP3, WAV, etc.) or use your device's microphone to record a new idea.</p>
+                    <p>Simply drag and drop your MP3 file or record a live melody. Our system handles the heavy lifting,
+                        preparing your audio for a high-fidelity transcription.</p>
                 </div>
+
                 <div class="step-card">
-                    <span class="step-number">2.</span>
+                    <i class="fas fa-brain step-icon"></i>
                     <h3>AI Analysis & Processing</h3>
-                    <p>Our custom deep-learning model analyzes pitch, rhythm, and dynamics to create a precise music XML
-                        structure.</p>
+                    <p>Our advanced neural networks break down every note. By mapping pitch, tempo, and dynamics, we
+                        transform raw sound into a structured digital score in seconds.</p>
                 </div>
+
                 <div class="step-card">
-                    <span class="step-number">3.</span>
-                    <h3>View, Edit, & Download</h3>
-                    <p>Get instant sheet music! Export as PDF, MIDI, or refine the notation in our built-in web editor.
-                    </p>
+                    <i class="fas fa-file-pdf step-icon"></i>
+                    <h3>View & Download Instantly</h3>
+                    <p>Review your generated sheet music instantly on-screen. Once you're ready, export a beautifully
+                        formatted, print-ready PDF with a single click.</p>
                 </div>
             </div>
         </section>
-
-
         <br>
         <hr class="container">
-
         <section id="detect" class="upload-section container">
             <h2 class="section-heading">🎶 Generate Notation from Audio 🎶</h2>
             <div class="upload-area">
@@ -80,98 +86,70 @@
                     <input type="file" id="audioInput" accept="audio/*" class="sr-only">
                     <div class="btn primary-btn"><i class="fas fa-upload"></i> Choose Audio File</div>
                 </label>
-
                 <div class="preview-processing-area">
                     <div id="loadingSpinner" class="spinner-container" style="display: none;">
                         <p>AI is analyzing... please wait.</p>
                     </div>
                     <button id="analyzeAudioBtn" class="btn success-btn" disabled>
-                        <i class="fas fa-file-download"></i> Generate Sheet Music
+                        <i class="fas fa-file-download"></i> Generate Music Sheet
                     </button>
                 </div>
             </div>
-
             <div id="resultsSection" class="results-area" style="display:none;">
                 <div id="notation-container"></div>
                 <div class="download-options">
-                    <button id="downloadPdf" class="btn primary-btn"><i class="fas fa-file-pdf"></i> PDF</button>
-                    <button id="downloadMidi" class="btn success-btn"><i class="fas fa-file-audio"></i> MIDI</button>
+                    <button id="downloadPdf" class="btn primary-btn"><i class="fas fa-file-pdf"></i> DOWNLOAD
+                        PDF</button>
                 </div>
             </div>
         </section>
-
-        <hr class="container">
-
-        <br><br>
-        <section id="demo" class="demo-section container">
-            <h2 class="section-heading">🎼 Before & After Demo 🎼</h2>
-            <p class="demo-subtitle">See the magic: raw audio is transformed into clean, professional notation.</p>
-            <div class="demo-grid">
-                <div class="demo-card before-card">
-                    <h3>Before: Raw Audio</h3>
-                    <i class="fas fa-microphone demo-icon"></i>
-                    <p>A 15-second acoustic guitar riff (WAV format)</p>
-                    <!-- NEW: Hidden audio element for playback -->
-                    <audio id="audioPlayer" style="display: none;"></audio>
-                    <button id="playAudioBtn" class="btn primary-btn disabled" disabled>
-                        <i class="fas fa-play"></i> Play Audio
-                    </button>
-                </div>
-                <!-- After card remains unchanged -->
-                <div class="demo-card after-card">
-                    <h3>After: Generated Sheet</h3>
-                    <i class="fas fa-book-open demo-icon"></i>
-                    <div class="notation-placeholder">
-                        [Image of a generated music sheet (Treble and Bass Clefs)]
-                    </div>
-                    <p>Standard notation with rhythm and dynamics</p>
-                    <button class="btn success-btn disabled" disabled>View Sheet <i class="fas fa-eye"></i></button>
-                </div>
-            </div>
-        </section>
-
     </main>
-
+    <br>
     <footer>
         <div class="container">
             <p>&copy; 2025 <em>A2S</em> AI Music Notation Generator. All rights reserved.</p>
         </div>
     </footer>
-
-    <script>
-        // Smooth scroll and mobile menu toggle logic would go here
-    </script>
-
     <script type="module">
+        // --- Constants & State Management ---
         const audioInput = document.getElementById('audioInput');
         const analyzeBtn = document.getElementById('analyzeAudioBtn');
         const placeholder = document.getElementById('previewPlaceholder');
         const resultsBox = document.getElementById('resultsSection');
         const notationContainer = document.getElementById('notation-container');
+        const loadingSpinner = document.getElementById('loadingSpinner');
 
-        // Global variable to hold metadata for the PDF generator
         let currentMetadata = {
             title: "",
             instrument: "",
             keyTempo: ""
         };
 
-        // Enable button when file is picked
-        audioInput.addEventListener('change', () => {
-            if (audioInput.files.length > 0) {
-                placeholder.innerText = "Selected: " + audioInput.files[0].name;
+        // --- File Selection Logic ---
+        const handleFileSelect = (files) => {
+            if (files.length > 0) {
+                const fileName = files[0].name;
+                placeholder.innerHTML = `<i class="fas fa-file-audio"></i> Selected: <strong>${fileName}</strong>`;
                 analyzeBtn.disabled = false;
+                analyzeBtn.classList.add('btn-glow'); // Optional class for visual pop
             }
-        });
+        };
 
+        audioInput.addEventListener('change', () => handleFileSelect(audioInput.files));
+
+        // --- Generation Logic ---
         analyzeBtn.addEventListener('click', async () => {
             const file = audioInput.files[0];
+            if (!file) return;
+
             const formData = new FormData();
             formData.append('audio', file);
 
+            // UI Transition to "Processing"
             analyzeBtn.disabled = true;
-            document.getElementById('loadingSpinner').style.display = 'block';
-            notationContainer.innerHTML = ""; // Clear previous results
+            analyzeBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> AI is working...`;
+            loadingSpinner.style.display = 'block';
+            notationContainer.innerHTML = "";
             resultsBox.style.display = 'none';
 
             try {
@@ -182,124 +160,137 @@
 
                 const data = await response.json();
 
-                // 1. INSTRUMENT VALIDATION CHECK
-                // If the server returns a 400 error (e.g., non-piano detected)
                 if (!response.ok) {
-                    alert(data.error || "An error occurred during processing.");
-                    return;
+                    throw new Error(data.error || "An error occurred during processing.");
                 }
 
                 if (data.musicXmlUrl) {
-                    // Store metadata for the PDF
                     currentMetadata = {
                         title: data.title || file.name,
                         instrument: data.instrument || "Piano",
-                        keyTempo: data.keyTempo || "Unknown"
+                        keyTempo: data.keyTempo || "Auto-detected"
                     };
 
+                    // Display Results
                     resultsBox.style.display = 'block';
 
-                    // 2. INITIALIZE OSMD
+                    // Initialize OpenSheetMusicDisplay
                     const osmd = new opensheetmusicdisplay.OpenSheetMusicDisplay("notation-container", {
                         autoResize: true,
-                        drawTitle: true,
+                        drawTitle: false,
+                        backend: "svg", // SVG renders cleaner in modern browsers
                     });
 
                     await osmd.load(data.musicXmlUrl);
                     osmd.render();
 
-                    // 3. FIXED MULTI-PAGE PDF DOWNLOAD LOGIC
-                    document.getElementById('downloadPdf').onclick = async () => {
-                        const { jsPDF } = window.jspdf;
-                        const notationContent = document.getElementById('notation-container');
+                    // Setup PDF Generation
+                    setupPdfButton();
 
-                        // 1. Capture the entire notation as one tall canvas
-                        const canvas = await html2canvas(notationContent, {
-                            scale: 2, // High resolution
-                            useCORS: true,
-                            backgroundColor: "#ffffff"
-                        });
-
-                        const imgData = canvas.toDataURL('image/png');
-
-                        // PDF Page Dimensions (Letter: 8.5 x 11 inches)
-                        const pdfWidth = 8.5;
-                        const pdfHeight = 11;
-                        const margin = 0.5; // 0.5 inch margins
-                        const contentWidth = pdfWidth - (margin * 2);
-                        const contentHeight = pdfHeight - (margin * 2);
-
-                        // Calculate how much of the canvas fits on one PDF page
-                        const imgWidth = canvas.width;
-                        const imgHeight = canvas.height;
-                        const ratio = contentWidth / (imgWidth / 96); // Basic scale ratio
-
-                        // Scale canvas height to PDF units
-                        const pxToInches = (px) => px / 96; // Standard DPI conversion
-                        const totalImgHeightInPdfUnits = (imgHeight * contentWidth) / imgWidth;
-
-                        const doc = new jsPDF('p', 'in', [pdfWidth, pdfHeight]);
-
-                        // Metadata Header (Only on the first page)
-                        doc.setFont("Montserrat", "bold");
-                        doc.setFontSize(18);
-                        doc.text("A2S AI Music Notation", margin, 0.7);
-                        doc.setFontSize(10);
-                        doc.setFont("Montserrat", "normal");
-                        doc.text(`Title: ${currentMetadata.title} | Instrument: ${currentMetadata.instrument} | ${currentMetadata.keyTempo}`, margin, 1.0);
-                        doc.line(margin, 1.2, pdfWidth - margin, 1.2);
-
-                        let heightLeft = totalImgHeightInPdfUnits;
-                        let position = 1.4; // Starting Y position on first page (after header)
-                        let pageCount = 0;
-
-                        // Loop to create multiple pages
-                        while (heightLeft > 0) {
-                            // Add image slice to current page
-                            // Parameters: source, type, x, y, width, height, alias, compression, rotation
-                            doc.addImage(
-                                imgData,
-                                'PNG',
-                                margin,
-                                position,
-                                contentWidth,
-                                totalImgHeightInPdfUnits
-                            );
-
-                            heightLeft -= (pageCount === 0 ? (contentHeight - 1.4) : contentHeight);
-                            pageCount++;
-
-                            if (heightLeft > 0) {
-                                doc.addPage();
-                                position = margin - (pageCount * contentHeight) + 1.4;
-                                // The negative position "slides" the long image up so the next section is visible
-                            }
-                        }
-
-                        doc.save(`${currentMetadata.title.replace(/\.[^/.]+$/, "")}_Notation.pdf`);
-                    };
-
-                    // 4. MIDI DOWNLOAD LOGIC
-                    document.getElementById('downloadMidi').onclick = () => {
-                        const midiUrl = data.musicXmlUrl.replace('.xml', '.mid');
-                        const link = document.createElement('a');
-                        link.href = midiUrl;
-                        link.download = `${currentMetadata.title.replace(/\.[^/.]+$/, "")}.mid`;
-                        link.click();
-                    };
-
-                    resultsBox.scrollIntoView({ behavior: 'smooth' });
+                    // Smooth Scroll to Result
+                    resultsBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             } catch (err) {
-                console.error(err);
-                alert("Error processing audio. Check if server is running.");
+                console.error("A2S Error:", err);
+                alert(err.message);
             } finally {
-                document.getElementById('loadingSpinner').style.display = 'none';
+                loadingSpinner.style.display = 'none';
                 analyzeBtn.disabled = false;
+                analyzeBtn.innerHTML = `<i class="fas fa-magic"></i> Generate Music Sheet`;
             }
         });
-    </script>
 
+        // --- PDF Export Logic (Refined for the Vibe) ---
+        function setupPdfButton() {
+            document.getElementById('downloadPdf').onclick = async () => {
+                const { jsPDF } = window.jspdf;
+                const btn = document.getElementById('downloadPdf');
+                btn.innerHTML = `<i class="fas fa-cog fa-spin"></i> PREPARING PDF...`;
+
+                const canvas = await html2canvas(notationContainer, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: "#ffffff"
+                });
+
+                const imgData = canvas.toDataURL('image/png');
+                const pdfWidth = 8.5;
+                const pdfHeight = 11;
+                const margin = 0.5;
+                const contentWidth = pdfWidth - (margin * 2);
+                const imgWidth = canvas.width;
+                const imgHeight = canvas.height;
+                const totalImgHeightInPdfUnits = (imgHeight * contentWidth) / imgWidth;
+
+                const doc = new jsPDF('p', 'in', [pdfWidth, pdfHeight]);
+
+                // Brand Header (Vibrant Blue - matches your --accent-color)
+                doc.setFillColor(0, 191, 255); // #00BFFF
+                doc.rect(pdfWidth - 2.1, 0.4, 1.6, 0.35, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(8);
+                doc.setFont("helvetica", "bold");
+                doc.text("GENERATED BY A2S", pdfWidth - 1.3, 0.62, { align: "center" });
+
+                // Title Handling
+                doc.setTextColor(47, 79, 79); // #2F4F4F
+                doc.setFontSize(22);
+                const cleanTitle = currentMetadata.title.replace(/\.[^/.]+$/, "").toUpperCase();
+                const wrappedTitle = doc.splitTextToSize(cleanTitle, contentWidth - 1.0);
+                doc.text(wrappedTitle, pdfWidth / 2, 1.1, { align: "center" });
+
+                // Metadata
+                const titleHeight = wrappedTitle.length * 0.3;
+                const metadataY = 1.1 + titleHeight;
+                doc.setFontSize(10);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(112, 128, 144);
+                doc.text(`Instrument: ${currentMetadata.instrument}  |  Key & Tempo: ${currentMetadata.keyTempo}`, pdfWidth / 2, metadataY, { align: "center" });
+
+                // Stylish Separator
+                doc.setDrawColor(0, 191, 255);
+                doc.setLineWidth(0.015);
+                doc.line(margin, metadataY + 0.2, pdfWidth - margin, metadataY + 0.2);
+
+                // Multi-page Image Rendering Logic
+                const notationStartPos = metadataY + 0.5;
+                let heightLeft = totalImgHeightInPdfUnits;
+                let position = notationStartPos;
+                let pageCount = 0;
+
+                while (heightLeft > 0) {
+                    doc.addImage(imgData, 'PNG', margin, position, contentWidth, totalImgHeightInPdfUnits);
+                    heightLeft -= (pdfHeight - (pageCount === 0 ? notationStartPos : margin) - margin);
+                    pageCount++;
+                    if (heightLeft > 0) {
+                        doc.addPage();
+                        position = margin - (pdfHeight - notationStartPos - margin) - ((pageCount - 1) * (pdfHeight - 2 * margin));
+                    }
+                }
+
+                doc.save(`${cleanTitle}_A2S_Sheet.pdf`);
+                btn.innerHTML = `<i class="fas fa-file-pdf"></i> DOWNLOAD PDF`;
+            };
+        }
+
+        // --- Drag and Drop Handling ---
+        const dragDropArea = document.querySelector('.drag-drop-area');
+        ['dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dragDropArea.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        dragDropArea.addEventListener('dragover', () => dragDropArea.classList.add('drag-over'));
+        dragDropArea.addEventListener('dragleave', () => dragDropArea.classList.remove('drag-over'));
+        dragDropArea.addEventListener('drop', (e) => {
+            dragDropArea.classList.remove('drag-over');
+            const droppedFiles = e.dataTransfer.files;
+            audioInput.files = droppedFiles;
+            handleFileSelect(droppedFiles);
+        });
+    </script>
 </body>
 
 </html>

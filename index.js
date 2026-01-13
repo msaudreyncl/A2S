@@ -20,17 +20,14 @@ const upload = multer({ dest: "uploads/" });
 app.post("/api/generate", upload.single("audio"), (req, res) => {
     if (!req.file) return res.status(400).send("No file.");
 
-    const inputPath = req.file.path; // The actual file on disk
-    // Pass the absolute path to Python
+    const inputPath = req.file.path;
     const pythonProcess = spawn("python", ["transcribe.py", path.resolve(inputPath)]);
 
     pythonProcess.on("close", (code) => {
         if (code === 0) {
-            // Basic Pitch appends '_basic_pitch' to the filename
             const base = path.basename(inputPath);
             res.json({
                 title: req.file.originalname,
-                midiUrl: `http://localhost:3000/uploads/${base}_basic_pitch.mid`,
                 musicXmlUrl: `http://localhost:3000/uploads/${base}_basic_pitch.xml`
             });
         } else {
