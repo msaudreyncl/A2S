@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const uploadsDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
@@ -27,6 +27,11 @@ const storage = multer.diskStorage({
     }
 });
 const upload = multer({ storage });
+
+// Health check endpoint for Render
+app.get("/", (req, res) => {
+    res.json({ status: "A2S Backend is running", version: "1.0.0" });
+});
 
 app.post("/api/generate", upload.single("audio"), (req, res) => {
     if (!req.file) return res.status(400).json({ error: "No audio file provided." });
@@ -53,8 +58,12 @@ app.post("/api/generate", upload.single("audio"), (req, res) => {
             if (output.error) return res.status(500).json({ error: output.error });
 
             const xmlFileName = path.basename(output.xml_file);
+            
+            // Use dynamic URL based on environment
+            const baseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+            
             res.json({
-                musicXmlUrl: `http://localhost:${PORT}/uploads/${xmlFileName}`,
+                musicXmlUrl: `${baseUrl}/uploads/${xmlFileName}`,
                 title: req.file.originalname,
                 instrument: output.instrument,
                 keyTempo: `${output.key} @ ${output.tempo}`
@@ -66,4 +75,4 @@ app.post("/api/generate", upload.single("audio"), (req, res) => {
     });
 });
 
-app.listen(PORT, () => console.log(`Server running: http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

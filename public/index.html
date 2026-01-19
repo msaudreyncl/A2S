@@ -264,6 +264,9 @@
     </footer>
 
     <script type="module">
+        // --- Configuration ---
+        const API_BASE_URL = 'https://a2s-backend.onrender.com'; // CHANGE THIS to your Render backend URL after deployment
+
         // --- Constants & State Management ---
         const audioInput = document.getElementById('audioInput');
         const analyzeBtn = document.getElementById('analyzeAudioBtn');
@@ -325,7 +328,7 @@
             resultsBox.style.display = 'none';
 
             try {
-                const response = await fetch('http://localhost:3000/api/generate', {
+                const response = await fetch(`${API_BASE_URL}/api/generate`, {
                     method: 'POST',
                     body: formData
                 });
