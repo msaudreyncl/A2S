@@ -1,15 +1,12 @@
 {
-  "name": "a2s-backend",
+  "name": "express-backend",
   "version": "1.0.0",
-  "description": "Backend server for A2S Music Notation Generator",
+  "description": "Backend server for the project",
   "type": "module",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "dev": "nodemon server.js",
-    "start": "node server.js"
-  },
-  "engines": {
-    "node": ">=18.0.0"
+    "dev": "nodemon index.js",
+    "start": "node index.js"
   },
   "dependencies": {
     "axios": "^1.11.0",
