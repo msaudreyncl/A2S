@@ -800,11 +800,170 @@ nav ul li a:hover {
 }
 
 /* =========================================================
-           Generate Section - Enhanced
+           Generate Section - ENHANCED WITH CREATIVE BG
         ========================================================= */
 .generate-section {
     padding: 120px 0;
-    background: var(--gradient-bg);
+    background: linear-gradient(135deg, #E0F7FA 0%, #F0F8FF 50%, #E1F5FE 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Animated Gradient Orbs */
+.generate-bg-orbs {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.bg-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    animation: orbFloat 20s ease-in-out infinite;
+}
+
+.orb-1 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(0, 191, 255, 0.3), transparent 70%);
+    top: -150px;
+    left: -100px;
+    animation-delay: 0s;
+}
+
+.orb-2 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(30, 144, 255, 0.25), transparent 70%);
+    bottom: -200px;
+    right: -150px;
+    animation-delay: 5s;
+}
+
+.orb-3 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(0, 206, 209, 0.2), transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: 10s;
+}
+
+@keyframes orbFloat {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+    }
+    33% {
+        transform: translate(50px, -50px) scale(1.1);
+    }
+    66% {
+        transform: translate(-30px, 40px) scale(0.9);
+    }
+}
+
+/* Animated Grid Pattern */
+.generate-grid-pattern {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-image: 
+        linear-gradient(rgba(0, 191, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 191, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: 0;
+    animation: gridSlide 30s linear infinite;
+}
+
+@keyframes gridSlide {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 50px 50px;
+    }
+}
+
+/* Floating Musical Notes */
+.generate-floating-notes {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.gen-note {
+    position: absolute;
+    font-size: 3rem;
+    color: var(--accent-color);
+    opacity: 0.1;
+    animation: genNoteFloat 15s ease-in-out infinite;
+}
+
+.gen-note-1 {
+    top: 15%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.gen-note-2 {
+    top: 60%;
+    left: 5%;
+    animation-delay: 3s;
+}
+
+.gen-note-3 {
+    top: 25%;
+    right: 15%;
+    animation-delay: 6s;
+}
+
+.gen-note-4 {
+    top: 70%;
+    right: 20%;
+    animation-delay: 9s;
+}
+
+.gen-note-5 {
+    top: 40%;
+    left: 85%;
+    animation-delay: 12s;
+}
+
+.gen-note-6 {
+    top: 85%;
+    left: 50%;
+    animation-delay: 2s;
+}
+
+@keyframes genNoteFloat {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity: 0.08;
+    }
+    50% {
+        transform: translateY(-40px) rotate(15deg) scale(1.2);
+        opacity: 0.15;
+    }
+}
+
+/* Ensure content is above background effects */
+.generate-section .container {
+    position: relative;
+    z-index: 1;
 }
 
 .upload-wrapper {
@@ -816,7 +975,8 @@ nav ul li a:hover {
 .upload-card {
     width: 100%;
     max-width: 700px;
-    background: white;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     border-radius: 30px;
     padding: 50px;
     box-shadow: 0 20px 60px rgba(0, 191, 255, 0.15);
