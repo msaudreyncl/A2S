@@ -13,6 +13,8 @@
     <script src="https://cdn.jsdelivr.net/npm/opensheetmusicdisplay@1.1.0/build/opensheetmusicdisplay.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Load config BEFORE main script -->
+    <script src="/config.js"></script>
 </head>
 
 <body>
@@ -211,6 +213,7 @@
                                 <p id="fileStatus" class="file-status">or click to browse your computer</p>
                                 <div class="supported-formats">
                                     <span class="format-badge">MP3</span>
+                                    <span class="format-badge">WAV</span>
                                 </div>
                             </div>
                             <input type="file" id="audioInput" accept="audio/*" class="sr-only">
@@ -263,10 +266,11 @@
         </div>
     </footer>
 
-    <script type="module">
-        // --- API Configuration ---
-        // Use environment variable for backend URL (Vite injects this at build time)
-        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    <script>
+        // --- API Configuration from config.js ---
+        const API_BASE_URL = window.API_CONFIG?.BACKEND_URL || 'http://localhost:3000';
+        
+        console.log('🔗 Connecting to backend:', API_BASE_URL);
 
         // --- Constants & State Management ---
         const audioInput = document.getElementById('audioInput');
@@ -287,7 +291,8 @@
         const handleFileSelect = (files) => {
             if (files.length > 0) {
                 const fileName = files[0].name;
-                fileStatus.innerHTML = `<i class="fas fa-check-circle"></i> Selected: <strong>${fileName}</strong>`;
+                const fileSize = (files[0].size / (1024 * 1024)).toFixed(2); // MB
+                fileStatus.innerHTML = `<i class="fas fa-check-circle"></i> Selected: <strong>${fileName}</strong> (${fileSize} MB)`;
                 fileStatus.style.color = 'var(--accent-color)';
                 analyzeBtn.disabled = false;
                 dragDropArea.classList.add('file-selected');
@@ -316,7 +321,17 @@
         // --- Generation Logic ---
         analyzeBtn.addEventListener('click', async () => {
             const file = audioInput.files[0];
-            if (!file) return;
+            if (!file) {
+                alert('Please select an audio file first.');
+                return;
+            }
+
+            // Validate file type
+            const validTypes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav'];
+            if (!validTypes.includes(file.type) && !file.name.match(/\.(mp3|wav)$/i)) {
+                alert('Please upload a valid audio file (MP3 or WAV).');
+                return;
+            }
 
             const formData = new FormData();
             formData.append('audio', file);
@@ -329,17 +344,22 @@
             resultsBox.style.display = 'none';
 
             try {
-                // Use API_BASE_URL from environment variable
+                console.log('📤 Uploading to:', `${API_BASE_URL}/api/generate`);
+                
                 const response = await fetch(`${API_BASE_URL}/api/generate`, {
                     method: 'POST',
                     body: formData
                 });
 
-                const data = await response.json();
+                console.log('📥 Response status:', response.status);
 
                 if (!response.ok) {
-                    throw new Error(data.error || "An error occurred during processing.");
+                    const errorData = await response.json().catch(() => ({ error: 'Server error' }));
+                    throw new Error(errorData.error || `Server returned ${response.status}`);
                 }
+
+                const data = await response.json();
+                console.log('✅ Response data:', data);
 
                 if (data.musicXmlUrl) {
                     currentMetadata = {
@@ -352,6 +372,7 @@
                     resultsBox.style.display = 'block';
 
                     // Initialize OpenSheetMusicDisplay
+                    console.log('🎼 Loading music XML from:', data.musicXmlUrl);
                     const osmd = new opensheetmusicdisplay.OpenSheetMusicDisplay("notation-container", {
                         autoResize: true,
                         drawTitle: false,
@@ -366,10 +387,12 @@
 
                     // Smooth Scroll to Result
                     resultsBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    throw new Error('No music sheet data received from server.');
                 }
             } catch (err) {
-                console.error("A2S Error:", err);
-                alert(err.message);
+                console.error("❌ A2S Error:", err);
+                alert(`Error: ${err.message}\n\nPlease check:\n1. Backend is running at ${API_BASE_URL}\n2. File is a valid audio file\n3. Network connection is stable`);
             } finally {
                 loadingSpinner.style.display = 'none';
                 analyzeBtn.disabled = false;
@@ -480,6 +503,12 @@
                 }
             };
         }
+
+        // Test backend connection on page load
+        fetch(`${API_BASE_URL}/api/health`)
+            .then(res => res.json())
+            .then(data => console.log('✅ Backend health check:', data))
+            .catch(err => console.warn('⚠️ Backend not reachable:', err.message));
     </script>
 </body>
 
