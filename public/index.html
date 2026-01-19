@@ -268,9 +268,9 @@
 
     <script>
         // --- API Configuration from config.js ---
-        const API_BASE_URL = window.API_CONFIG?.BACKEND_URL || 'http://localhost:3000';
+        const API_BASE_URL = window.API_CONFIG?.BACKEND_URL || 'https://a2s-backend.onrender.com';
         
-        console.log('🔗 Connecting to backend:', API_BASE_URL);
+        console.log('🔗 Backend URL configured:', API_BASE_URL);
 
         // --- Constants & State Management ---
         const audioInput = document.getElementById('audioInput');
@@ -344,55 +344,105 @@
             resultsBox.style.display = 'none';
 
             try {
-                console.log('📤 Uploading to:', `${API_BASE_URL}/api/generate`);
+                console.log('📤 Sending request to:', `${API_BASE_URL}/api/generate`);
+                console.log('📦 File details:', {
+                    name: file.name,
+                    type: file.type,
+                    size: `${(file.size / 1024 / 1024).toFixed(2)} MB`
+                });
                 
                 const response = await fetch(`${API_BASE_URL}/api/generate`, {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
                 });
 
-                console.log('📥 Response status:', response.status);
+                console.log('📥 Response received:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    ok: response.ok
+                });
 
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({ error: 'Server error' }));
-                    throw new Error(errorData.error || `Server returned ${response.status}`);
+                    let errorMsg = `Server returned ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMsg = errorData.error || errorMsg;
+                        console.error('❌ Server error details:', errorData);
+                    } catch (e) {
+                        const errorText = await response.text();
+                        console.error('❌ Server response:', errorText);
+                    }
+                    throw new Error(errorMsg);
                 }
 
                 const data = await response.json();
                 console.log('✅ Response data:', data);
 
-                if (data.musicXmlUrl) {
-                    currentMetadata = {
-                        title: data.title || file.name,
-                        instrument: data.instrument || "Piano",
-                        keyTempo: data.keyTempo || "Auto-detected"
-                    };
+                if (!data.musicXmlUrl) {
+                    throw new Error('Server did not return music sheet data. Response: ' + JSON.stringify(data));
+                }
 
-                    // Display Results
-                    resultsBox.style.display = 'block';
+                currentMetadata = {
+                    title: data.title || file.name,
+                    instrument: data.instrument || "Piano",
+                    keyTempo: data.keyTempo || "Auto-detected"
+                };
 
-                    // Initialize OpenSheetMusicDisplay
-                    console.log('🎼 Loading music XML from:', data.musicXmlUrl);
-                    const osmd = new opensheetmusicdisplay.OpenSheetMusicDisplay("notation-container", {
-                        autoResize: true,
-                        drawTitle: false,
-                        backend: "svg",
-                    });
+                // Display Results
+                resultsBox.style.display = 'block';
 
+                // Initialize OpenSheetMusicDisplay
+                console.log('🎼 Loading music XML from:', data.musicXmlUrl);
+                const osmd = new opensheetmusicdisplay.OpenSheetMusicDisplay("notation-container", {
+                    autoResize: true,
+                    drawTitle: false,
+                    backend: "svg",
+                });
+
+                try {
                     await osmd.load(data.musicXmlUrl);
                     osmd.render();
-
-                    // Setup PDF Generation
-                    setupPdfButton();
-
-                    // Smooth Scroll to Result
-                    resultsBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                } else {
-                    throw new Error('No music sheet data received from server.');
+                    console.log('✅ Sheet music rendered successfully');
+                } catch (renderError) {
+                    console.error('❌ Failed to render sheet music:', renderError);
+                    throw new Error('Failed to display sheet music: ' + renderError.message);
                 }
+
+                // Setup PDF Generation
+                setupPdfButton();
+
+                // Smooth Scroll to Result
+                resultsBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
             } catch (err) {
-                console.error("❌ A2S Error:", err);
-                alert(`Error: ${err.message}\n\nPlease check:\n1. Backend is running at ${API_BASE_URL}\n2. File is a valid audio file\n3. Network connection is stable`);
+                console.error("❌ A2S Error Details:", {
+                    message: err.message,
+                    stack: err.stack,
+                    name: err.name
+                });
+                
+                let userMessage = 'Failed to process audio file.\n\n';
+                
+                if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+                    userMessage += `Cannot connect to backend at: ${API_BASE_URL}\n\n` +
+                                 'Possible causes:\n' +
+                                 '1. Backend server is not running or not deployed\n' +
+                                 '2. CORS is blocking the request\n' +
+                                 '3. Network connection issue\n\n' +
+                                 'Check browser console for details.';
+                } else {
+                    userMessage += `Error: ${err.message}\n\n` +
+                                 'Please ensure:\n' +
+                                 '1. File is a valid audio file (MP3/WAV)\n' +
+                                 '2. File size is under 50MB\n' +
+                                 '3. Backend server is accessible';
+                }
+                
+                alert(userMessage);
             } finally {
                 loadingSpinner.style.display = 'none';
                 analyzeBtn.disabled = false;
@@ -505,10 +555,24 @@
         }
 
         // Test backend connection on page load
+        console.log('🔍 Testing backend connection...');
         fetch(`${API_BASE_URL}/api/health`)
-            .then(res => res.json())
-            .then(data => console.log('✅ Backend health check:', data))
-            .catch(err => console.warn('⚠️ Backend not reachable:', err.message));
+            .then(res => {
+                console.log('Health check response status:', res.status);
+                return res.json();
+            })
+            .then(data => {
+                console.log('✅ Backend is reachable:', data);
+                console.log('✅ Your backend is online and ready!');
+            })
+            .catch(err => {
+                console.error('⚠️ Backend health check failed:', err);
+                console.error(`⚠️ Cannot reach backend at ${API_BASE_URL}`);
+                console.error('Please verify:');
+                console.error('1. Backend is deployed and running');
+                console.error('2. BACKEND_URL in config.js is correct');
+                console.error('3. CORS is properly configured');
+            });
     </script>
 </body>
 
