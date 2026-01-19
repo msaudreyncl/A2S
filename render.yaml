@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: a2s-backend
+    env: node
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: npm install && pip install -r requirements.txt
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_URL
+        value: https://a2s.vercel.app
+      - key: BACKEND_URL
+        sync: false
+    autoDeploy: true
