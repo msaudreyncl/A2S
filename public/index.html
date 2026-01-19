@@ -87,8 +87,7 @@
                     </div>
                     <h1 class="hero-title">
                         Transform Audio Into <br>
-                        <span class="gradient-text">Music Sheet</span> 
-                        <span class="typed-cursor">|</span>
+                        <span class="gradient-text"><span id="typedText"></span><span class="typed-cursor">|</span></span>
                     </h1>
                     <p class="hero-subtitle">
                         The AI that turns any instrumental piano recording <em>— more instruments coming soon —</em> into professional, downloadable notation.
@@ -208,6 +207,20 @@
                 <div class="gen-note gen-note-4">♩</div>
                 <div class="gen-note gen-note-5">♪</div>
                 <div class="gen-note gen-note-6">♫</div>
+                <div class="gen-note gen-note-7">♬</div>
+                <div class="gen-note gen-note-8">♩</div>
+                <div class="gen-note gen-note-9">♪</div>
+                <div class="gen-note gen-note-10">♫</div>
+                <div class="gen-note gen-note-11">♬</div>
+                <div class="gen-note gen-note-12">♩</div>
+                <div class="gen-note gen-note-13">🎵</div>
+                <div class="gen-note gen-note-14">🎶</div>
+                <div class="gen-note gen-note-15">♪</div>
+                <div class="gen-note gen-note-16">♫</div>
+                <div class="gen-note gen-note-17">♬</div>
+                <div class="gen-note gen-note-18">♩</div>
+                <div class="gen-note gen-note-19">🎵</div>
+                <div class="gen-note gen-note-20">🎶</div>
             </div>
 
             <div class="container">
@@ -219,35 +232,37 @@
 
                 <div class="upload-wrapper">
                     <div class="upload-card">
-                        <label for="audioInput" class="drag-drop-area">
-                            <div class="drop-visual">
-                                <div class="drop-icon-wrapper">
-                                    <div class="icon-pulse"></div>
-                                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <div class="upload-inner">
+                            <label for="audioInput" class="drag-drop-area">
+                                <div class="drop-visual">
+                                    <div class="drop-icon-wrapper">
+                                        <div class="icon-pulse"></div>
+                                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                    </div>
+                                    <h3>Drop your audio file here</h3>
+                                    <p id="fileStatus" class="file-status">or click to browse your computer</p>
+                                    <div class="supported-formats">
+                                        <span class="format-badge">MP3</span>
+                                    </div>
                                 </div>
-                                <h3>Drop your audio file here</h3>
-                                <p id="fileStatus" class="file-status">or click to browse your computer</p>
-                                <div class="supported-formats">
-                                    <span class="format-badge">MP3</span>
-                                </div>
-                            </div>
-                            <input type="file" id="audioInput" accept="audio/*" class="sr-only">
-                        </label>
+                                <input type="file" id="audioInput" accept="audio/*" class="sr-only">
+                            </label>
 
-                        <div class="action-area">
-                            <div id="loadingSpinner" class="spinner-container" style="display: none;">
-                                <div class="spinner-dots">
-                                    <div class="dot"></div>
-                                    <div class="dot"></div>
-                                    <div class="dot"></div>
+                            <div class="action-area">
+                                <div id="loadingSpinner" class="spinner-container" style="display: none;">
+                                    <div class="spinner-dots">
+                                        <div class="dot"></div>
+                                        <div class="dot"></div>
+                                        <div class="dot"></div>
+                                    </div>
+                                    <p>AI is analyzing your audio... please wait.</p>
                                 </div>
-                                <p>AI is analyzing your audio... please wait.</p>
+                                <button id="analyzeAudioBtn" class="btn generate-btn" disabled>
+                                    <i class="fas fa-magic"></i> 
+                                    <span>Generate Music Sheet</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
                             </div>
-                            <button id="analyzeAudioBtn" class="btn generate-btn" disabled>
-                                <i class="fas fa-magic"></i> 
-                                <span>Generate Music Sheet</span>
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -282,6 +297,45 @@
     </footer>
 
     <script type="module">
+        // --- Typing Animation ---
+        const typedTextElement = document.getElementById('typedText');
+        const textToType = 'Music Sheet';
+        let charIndex = 0;
+        let isDeleting = false;
+        let isPaused = false;
+
+        function typeText() {
+            if (isPaused) {
+                setTimeout(typeText, 2000); // Pause for 2 seconds
+                isPaused = false;
+                return;
+            }
+
+            if (!isDeleting && charIndex < textToType.length) {
+                // Typing forward
+                typedTextElement.textContent = textToType.substring(0, charIndex + 1);
+                charIndex++;
+                setTimeout(typeText, 150); // Typing speed
+            } else if (!isDeleting && charIndex === textToType.length) {
+                // Finished typing, pause before deleting
+                isPaused = true;
+                isDeleting = true;
+                setTimeout(typeText, 2000);
+            } else if (isDeleting && charIndex > 0) {
+                // Deleting backward
+                charIndex--;
+                typedTextElement.textContent = textToType.substring(0, charIndex);
+                setTimeout(typeText, 100); // Deleting speed
+            } else if (isDeleting && charIndex === 0) {
+                // Finished deleting, start typing again
+                isDeleting = false;
+                setTimeout(typeText, 500); // Short pause before retyping
+            }
+        }
+
+        // Start typing animation
+        typeText();
+
         // --- Constants & State Management ---
         const audioInput = document.getElementById('audioInput');
         const analyzeBtn = document.getElementById('analyzeAudioBtn');

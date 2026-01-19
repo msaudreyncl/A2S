@@ -333,10 +333,20 @@ nav ul li a:hover {
     display: inline-block;
 }
 
+#typedText {
+    background: linear-gradient(135deg, var(--accent-color), var(--vibrant-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
 .typed-cursor {
     color: var(--accent-color);
-    animation: blink 0.7s step-end infinite;
+    animation: blink 0.8s step-end infinite;
     font-weight: 300;
+    margin-left: 2px;
+    -webkit-text-fill-color: var(--accent-color);
+    background: none;
 }
 
 @keyframes blink {
@@ -803,7 +813,7 @@ nav ul li a:hover {
            Generate Section - ENHANCED WITH CREATIVE BG
         ========================================================= */
 .generate-section {
-    padding: 120px 0;
+    padding: 120px 0 80px 0;
     background: linear-gradient(135deg, #E0F7FA 0%, #F0F8FF 50%, #E1F5FE 100%);
     position: relative;
     overflow: hidden;
@@ -907,56 +917,160 @@ nav ul li a:hover {
 
 .gen-note {
     position: absolute;
-    font-size: 3rem;
+    font-size: 2.5rem;
     color: var(--accent-color);
-    opacity: 0.1;
+    opacity: 0.15;
     animation: genNoteFloat 15s ease-in-out infinite;
 }
 
 .gen-note-1 {
-    top: 15%;
-    left: 10%;
+    top: 8%;
+    left: 8%;
     animation-delay: 0s;
+    font-size: 2.8rem;
 }
 
 .gen-note-2 {
-    top: 60%;
-    left: 5%;
-    animation-delay: 3s;
+    top: 18%;
+    left: 25%;
+    animation-delay: 2s;
+    font-size: 2.2rem;
 }
 
 .gen-note-3 {
-    top: 25%;
-    right: 15%;
-    animation-delay: 6s;
+    top: 12%;
+    right: 12%;
+    animation-delay: 4s;
+    font-size: 3rem;
 }
 
 .gen-note-4 {
-    top: 70%;
-    right: 20%;
-    animation-delay: 9s;
+    top: 28%;
+    right: 28%;
+    animation-delay: 6s;
+    font-size: 2.4rem;
 }
 
 .gen-note-5 {
-    top: 40%;
-    left: 85%;
-    animation-delay: 12s;
+    top: 22%;
+    left: 45%;
+    animation-delay: 8s;
+    font-size: 2.6rem;
 }
 
 .gen-note-6 {
+    top: 38%;
+    left: 15%;
+    animation-delay: 1s;
+    font-size: 2.3rem;
+}
+
+.gen-note-7 {
+    top: 45%;
+    left: 5%;
+    animation-delay: 3s;
+    font-size: 2.9rem;
+}
+
+.gen-note-8 {
+    top: 42%;
+    right: 8%;
+    animation-delay: 5s;
+    font-size: 2.5rem;
+}
+
+.gen-note-9 {
+    top: 35%;
+    right: 35%;
+    animation-delay: 7s;
+    font-size: 2.7rem;
+}
+
+.gen-note-10 {
+    top: 52%;
+    left: 32%;
+    animation-delay: 9s;
+    font-size: 2.4rem;
+}
+
+.gen-note-11 {
+    top: 62%;
+    left: 10%;
+    animation-delay: 2.5s;
+    font-size: 2.8rem;
+}
+
+.gen-note-12 {
+    top: 68%;
+    left: 48%;
+    animation-delay: 4.5s;
+    font-size: 2.3rem;
+}
+
+.gen-note-13 {
+    top: 58%;
+    right: 15%;
+    animation-delay: 6.5s;
+    font-size: 3.2rem;
+}
+
+.gen-note-14 {
+    top: 72%;
+    right: 35%;
+    animation-delay: 8.5s;
+    font-size: 2.6rem;
+}
+
+.gen-note-15 {
+    top: 78%;
+    left: 22%;
+    animation-delay: 1.5s;
+    font-size: 2.5rem;
+}
+
+.gen-note-16 {
+    top: 82%;
+    right: 22%;
+    animation-delay: 3.5s;
+    font-size: 2.9rem;
+}
+
+.gen-note-17 {
+    top: 88%;
+    left: 42%;
+    animation-delay: 5.5s;
+    font-size: 2.4rem;
+}
+
+.gen-note-18 {
     top: 85%;
-    left: 50%;
-    animation-delay: 2s;
+    right: 48%;
+    animation-delay: 7.5s;
+    font-size: 2.7rem;
+}
+
+.gen-note-19 {
+    top: 92%;
+    left: 12%;
+    animation-delay: 9.5s;
+    font-size: 3.1rem;
+}
+
+.gen-note-20 {
+    top: 95%;
+    right: 18%;
+    animation-delay: 0.5s;
+    font-size: 2.5rem;
 }
 
 @keyframes genNoteFloat {
     0%, 100% {
         transform: translateY(0) rotate(0deg) scale(1);
-        opacity: 0.08;
+        opacity: 0.12;
     }
     50% {
-        transform: translateY(-40px) rotate(15deg) scale(1.2);
-        opacity: 0.15;
+        transform: translateY(-40px) rotate(15deg) scale(1.15);
+        opacity: 0.18;
     }
 }
 
@@ -974,26 +1088,50 @@ nav ul li a:hover {
 
 .upload-card {
     width: 100%;
-    max-width: 700px;
-    background: rgba(255, 255, 255, 0.95);
+    max-width: 750px;
+    background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(10px);
-    border-radius: 30px;
+    border-radius: 35px;
+    padding: 0;
+    box-shadow: 0 25px 70px rgba(0, 191, 255, 0.18);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-color), var(--vibrant-accent), var(--accent-color));
+    background-size: 200% 100%;
+    animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 0%; }
+    50% { background-position: 100% 0%; }
+}
+
+.upload-inner {
     padding: 50px;
-    box-shadow: 0 20px 60px rgba(0, 191, 255, 0.15);
-    border: 1px solid var(--border-color);
 }
 
 .drag-drop-area {
-    border: 3px dashed var(--border-color);
+    border: 3px dashed rgba(0, 191, 255, 0.3);
     border-radius: 25px;
     padding: 60px 40px;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    background: linear-gradient(135deg, rgba(0, 191, 255, 0.02), rgba(30, 144, 255, 0.02));
+    background: linear-gradient(135deg, rgba(0, 191, 255, 0.03), rgba(30, 144, 255, 0.03));
     position: relative;
     overflow: hidden;
-    margin-bottom: 40px;
+    margin-bottom: 35px;
+    display: block;
 }
 
 .drag-drop-area::before {
@@ -1293,7 +1431,7 @@ footer {
     background: var(--secondary-bg);
     padding: 50px 0;
     border-top: 1px solid var(--border-color);
-    margin-top: 80px;
+    margin-top: 0;
 }
 
 .footer-content {
@@ -1385,6 +1523,10 @@ footer {
     }
     
     .upload-card {
+        max-width: 100%;
+    }
+    
+    .upload-inner {
         padding: 40px 30px;
     }
     
@@ -1459,6 +1601,11 @@ footer {
     }
     
     .upload-card {
+        max-width: 100%;
+        border-radius: 25px;
+    }
+    
+    .upload-inner {
         padding: 30px 20px;
     }
     
