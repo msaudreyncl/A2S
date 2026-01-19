@@ -10,27 +10,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-
-// Use environment variable for PORT (required for cloud platforms)
-const PORT = process.env.PORT || 3000;
-
-// Determine the frontend URL based on environment
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+const PORT = 3000;
 
 const uploadsDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
 
-// CORS Configuration - Allow frontend domain
-app.use(cors({
-    origin: [
-        FRONTEND_URL,
-        "https://a2s.vercel.app",
-        "http://localhost:5173",
-        "http://localhost:3000"
-    ],
-    credentials: true
-}));
-
+app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(uploadsDir));
@@ -41,15 +26,7 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + path.extname(file.originalname));
     }
 });
-const upload = multer({ 
-    storage,
-    limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
-});
-
-// Health check endpoint (useful for monitoring)
-app.get("/api/health", (req, res) => {
-    res.json({ status: "ok", message: "A2S Backend is running" });
-});
+const upload = multer({ storage });
 
 app.post("/api/generate", upload.single("audio"), (req, res) => {
     if (!req.file) return res.status(400).json({ error: "No audio file provided." });
@@ -76,12 +53,8 @@ app.post("/api/generate", upload.single("audio"), (req, res) => {
             if (output.error) return res.status(500).json({ error: output.error });
 
             const xmlFileName = path.basename(output.xml_file);
-            
-            // Use environment variable for backend URL
-            const BACKEND_URL = process.env.BACKEND_URL || `http://localhost:${PORT}`;
-            
             res.json({
-                musicXmlUrl: `${BACKEND_URL}/uploads/${xmlFileName}`,
+                musicXmlUrl: `http://localhost:${PORT}/uploads/${xmlFileName}`,
                 title: req.file.originalname,
                 instrument: output.instrument,
                 keyTempo: `${output.key} @ ${output.tempo}`
@@ -93,8 +66,4 @@ app.post("/api/generate", upload.single("audio"), (req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`✅ A2S Backend running on port ${PORT}`);
-    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🔗 Allowing requests from: ${FRONTEND_URL}`);
-});
+app.listen(PORT, () => console.log(`Server running: http://localhost:${PORT}`));
