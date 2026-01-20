@@ -146,7 +146,7 @@
                 <div class="section-header">
                     <span class="section-tag">Process</span>
                     <h2 class="section-title">How A2S Works in <span class="highlight-text">3 Simple Steps</span></h2>
-                    <p class="section-desc">From audio upload to downloadable music sheet, A2S got your back!</p>
+                    <p class="section-desc">From audio upload to downloadable sheet music in under 30 seconds</p>
                 </div>
 
                 <div class="steps-container">
@@ -157,7 +157,7 @@
                             <i class="fas fa-upload"></i>
                         </div>
                         <h3>Upload Audio File</h3>
-                        <p>Simply drag and drop your audio file or click to browse. Our system supports MP3 audio format, preparing your file for high-fidelity transcription.</p>
+                        <p>Simply drag and drop your audio file or click to browse. Our system supports MP3, WAV, and other popular audio formats, preparing your file for high-fidelity transcription.</p>
                         <div class="step-arrow">
                             <i class="fas fa-long-arrow-alt-right"></i>
                         </div>
@@ -419,7 +419,6 @@
                     osmd.render();
 
                     setupPdfButton();
-
                     resultsBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             } catch (err) {
@@ -492,9 +491,9 @@
 
                     doc.setDrawColor(0, 191, 255);
                     doc.setLineWidth(0.02);
-                    doc.line(margin, metadataY + 0.25, pdfWidth - margin, metadataY + 0.25);
+                    doc.line(margin, metadataY + 0.18, pdfWidth - margin, metadataY + 0.18);
 
-                    const notationStartPos = metadataY + 0.4;
+                    const notationStartPos = metadataY + 0.33;
                     let heightLeft = totalImgHeightInPdfUnits;
                     let position = notationStartPos;
                     let pageCount = 0;

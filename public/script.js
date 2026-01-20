@@ -17,9 +17,8 @@ analyzeBtn.addEventListener('click', async () => {
 
     const data = await response.json();
 
-    // Populate results (excluding MIDI)
+    // Populate results (Instrument removed)
     document.getElementById('pieceTitle').innerText = data.title;
-    document.getElementById('instrumentDetected').innerText = data.instrument;
     document.getElementById('keyTempo').innerText = data.keyTempo;
 
     resultsBox.style.display = 'block';

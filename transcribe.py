@@ -37,14 +37,12 @@ def run_ai(input_file_path):
         if os.path.exists(midi_file):
             score = converter.parse(midi_file)
             
-            # Remove instrument names from all parts
+            # Change all instruments to "Ins."
             for part in score.parts:
-                part.partName = ''
-                part.partAbbreviation = ''
-                # Remove instrument objects
-                instruments_to_remove = part.getElementsByClass(instrument.Instrument)
-                for instr in instruments_to_remove:
-                    part.remove(instr)
+                part.partName = "Ins."
+                if part.hasElementOfClass(instrument.Instrument):
+                    for inst in part.getElementsByClass(instrument.Instrument):
+                        inst.instrumentName = "Ins."
             
             detected_key = score.analyze('key')
             detected_tempo = 120
