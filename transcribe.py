@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore")
 
 try:
     from basic_pitch.inference import predict_and_save, ICASSP_2022_MODEL_PATH
-    from music21 import converter, tempo, key
+    from music21 import converter, tempo, key, instrument
 except ImportError as e:
     print(json.dumps({"error": f"Missing library: {str(e)}"}))
     sys.exit(1)
@@ -36,6 +36,15 @@ def run_ai(input_file_path):
 
         if os.path.exists(midi_file):
             score = converter.parse(midi_file)
+            
+            # Remove instrument names from all parts
+            for part in score.parts:
+                part.partName = ''
+                part.partAbbreviation = ''
+                # Remove instrument objects
+                instruments_to_remove = part.getElementsByClass(instrument.Instrument)
+                for instr in instruments_to_remove:
+                    part.remove(instr)
             
             detected_key = score.analyze('key')
             detected_tempo = 120
