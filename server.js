@@ -56,7 +56,6 @@ app.post("/api/generate", upload.single("audio"), (req, res) => {
             res.json({
                 musicXmlUrl: `http://localhost:${PORT}/uploads/${xmlFileName}`,
                 title: req.file.originalname,
-                instrument: output.instrument,
                 keyTempo: `${output.key} @ ${output.tempo}`
             });
         } catch (e) {

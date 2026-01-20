@@ -3,11 +3,9 @@ import os
 import json
 import warnings
 
-# Force UTF-8 encoding for Windows console to prevent 'charmap' errors
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding='utf-8')
 
-# Silence TensorFlow and general warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 warnings.filterwarnings("ignore")
 
@@ -22,7 +20,6 @@ def run_ai(input_file_path):
     try:
         output_dir = os.path.dirname(input_file_path)
         
-        # Run Basic Pitch inference
         predict_and_save(
             audio_path_list=[input_file_path],
             output_directory=output_dir,
@@ -40,22 +37,18 @@ def run_ai(input_file_path):
         if os.path.exists(midi_file):
             score = converter.parse(midi_file)
             
-            # Extract Key and Tempo
             detected_key = score.analyze('key')
             detected_tempo = 120
             mark = score.flatten().getElementsByClass(tempo.MetronomeMark)
             if mark:
                 detected_tempo = round(mark[0].number)
             
-            # Export to MusicXML
             score.write('musicxml', fp=xml_file)
             
-            # JSON result - Ensure strings are clean of emojis
             result = {
                 "xml_file": xml_file,
                 "key": f"{detected_key.tonic.name} {detected_key.mode}",
-                "tempo": f"{detected_tempo} BPM",
-                "instrument": "Piano"
+                "tempo": f"{detected_tempo} BPM"
             }
             print(json.dumps(result))
         else:

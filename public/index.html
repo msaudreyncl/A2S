@@ -306,34 +306,29 @@
 
         function typeText() {
             if (isPaused) {
-                setTimeout(typeText, 2000); // Pause for 2 seconds
+                setTimeout(typeText, 2000);
                 isPaused = false;
                 return;
             }
 
             if (!isDeleting && charIndex < textToType.length) {
-                // Typing forward
                 typedTextElement.textContent = textToType.substring(0, charIndex + 1);
                 charIndex++;
-                setTimeout(typeText, 150); // Typing speed
+                setTimeout(typeText, 150);
             } else if (!isDeleting && charIndex === textToType.length) {
-                // Finished typing, pause before deleting
                 isPaused = true;
                 isDeleting = true;
                 setTimeout(typeText, 2000);
             } else if (isDeleting && charIndex > 0) {
-                // Deleting backward
                 charIndex--;
                 typedTextElement.textContent = textToType.substring(0, charIndex);
-                setTimeout(typeText, 100); // Deleting speed
+                setTimeout(typeText, 100);
             } else if (isDeleting && charIndex === 0) {
-                // Finished deleting, start typing again
                 isDeleting = false;
-                setTimeout(typeText, 500); // Short pause before retyping
+                setTimeout(typeText, 500);
             }
         }
 
-        // Start typing animation
         typeText();
 
         // --- Constants & State Management ---
@@ -347,7 +342,6 @@
 
         let currentMetadata = {
             title: "",
-            instrument: "",
             keyTempo: ""
         };
 
@@ -389,7 +383,6 @@
             const formData = new FormData();
             formData.append('audio', file);
 
-            // UI Transition to "Processing"
             analyzeBtn.disabled = true;
             analyzeBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>AI is working...</span>`;
             loadingSpinner.style.display = 'block';
@@ -411,14 +404,11 @@
                 if (data.musicXmlUrl) {
                     currentMetadata = {
                         title: data.title || file.name,
-                        instrument: data.instrument || "Piano",
                         keyTempo: data.keyTempo || "Auto-detected"
                     };
 
-                    // Display Results
                     resultsBox.style.display = 'block';
 
-                    // Initialize OpenSheetMusicDisplay
                     const osmd = new opensheetmusicdisplay.OpenSheetMusicDisplay("notation-container", {
                         autoResize: true,
                         drawTitle: false,
@@ -428,10 +418,8 @@
                     await osmd.load(data.musicXmlUrl);
                     osmd.render();
 
-                    // Setup PDF Generation
                     setupPdfButton();
 
-                    // Smooth Scroll to Result
                     resultsBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             } catch (err) {
@@ -471,28 +459,23 @@
 
                     const doc = new jsPDF('p', 'in', [pdfWidth, pdfHeight]);
 
-                    // Enhanced Header with Gradient Effect
                     doc.setFillColor(0, 191, 255);
                     doc.rect(0, 0, pdfWidth, 0.6, 'F');
                     
-                    // White overlay for gradient effect
                     doc.setFillColor(255, 255, 255);
                     doc.setGState(new doc.GState({opacity: 0.1}));
                     doc.rect(0, 0, pdfWidth, 0.6, 'F');
                     doc.setGState(new doc.GState({opacity: 1}));
 
-                    // A2S Logo
                     doc.setTextColor(255, 255, 255);
                     doc.setFontSize(24);
                     doc.setFont("helvetica", "bold");
                     doc.text("A2S", 0.5, 0.4);
                     
-                    // Tagline
                     doc.setFontSize(8);
                     doc.setFont("helvetica", "normal");
                     doc.text("AI Music Notation Generator", pdfWidth - 0.5, 0.4, { align: "right" });
 
-                    // Title Section
                     doc.setTextColor(47, 79, 79);
                     doc.setFontSize(20);
                     doc.setFont("helvetica", "bold");
@@ -500,22 +483,18 @@
                     const wrappedTitle = doc.splitTextToSize(cleanTitle, contentWidth - 0.5);
                     doc.text(wrappedTitle, pdfWidth / 2, 0.95, { align: "center" });
 
-                    // Metadata
                     const titleHeight = wrappedTitle.length * 0.28;
                     const metadataY = 0.95 + titleHeight;
                     doc.setFontSize(9);
                     doc.setFont("helvetica", "normal");
                     doc.setTextColor(112, 128, 144);
-                    doc.text(`Instrument: ${currentMetadata.instrument}`, pdfWidth / 2, metadataY, { align: "center" });
-                    doc.text(`Key & Tempo: ${currentMetadata.keyTempo}`, pdfWidth / 2, metadataY + 0.18, { align: "center" });
+                    doc.text(`Key & Tempo: ${currentMetadata.keyTempo}`, pdfWidth / 2, metadataY, { align: "center" });
 
-                    // Decorative Line
                     doc.setDrawColor(0, 191, 255);
                     doc.setLineWidth(0.02);
-                    doc.line(margin, metadataY + 0.35, pdfWidth - margin, metadataY + 0.35);
+                    doc.line(margin, metadataY + 0.25, pdfWidth - margin, metadataY + 0.25);
 
-                    // Multi-page Image Rendering
-                    const notationStartPos = metadataY + 0.5;
+                    const notationStartPos = metadataY + 0.4;
                     let heightLeft = totalImgHeightInPdfUnits;
                     let position = notationStartPos;
                     let pageCount = 0;
@@ -530,7 +509,6 @@
                         }
                     }
 
-                    // Footer on last page
                     const pageNumber = doc.internal.getNumberOfPages();
                     doc.setPage(pageNumber);
                     doc.setFontSize(8);
